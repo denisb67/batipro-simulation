@@ -1,0 +1,2929 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BatiPro SARL – Simulation annuelle BTP | 1ère STMG</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@400;700;900&display=swap');
+:root{
+  --bg:#f1f5f9;--panel:#ffffff;--panel2:#f8fafc;--panel3:#e9f0f7;
+  --accent:#ea6c05;--accent2:#0369a1;--green:#16a34a;--red:#dc2626;
+  --yellow:#b45309;--purple:#6d28d9;--text:#1e293b;--muted:#64748b;--border:#cbd5e1;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;}
+
+/* HEADER */
+@keyframes glow-pulse{0%,100%{opacity:.7;transform:scale(1);}50%{opacity:1;transform:scale(1.04);}}
+@keyframes rgb-shift{0%{filter:hue-rotate(0deg);}100%{filter:hue-rotate(360deg);}}
+@keyframes scan{0%{transform:translateY(-100%);}100%{transform:translateY(200%);}}
+
+.header{
+  background:linear-gradient(135deg,#020c14 0%,#031a2e 35%,#041e38 55%,#06122a 75%,#120820 100%);
+  border-bottom:2px solid #00d4ff;
+  padding:0;
+  position:sticky;top:0;z-index:50;
+  overflow:hidden;
+  box-shadow:0 4px 30px rgba(0,212,255,.25), 0 0 60px rgba(0,100,200,.15);
+}
+/* Glowing fan circle — left side */
+.header::before{
+  content:'';
+  position:absolute;left:-80px;top:50%;transform:translateY(-50%);
+  width:280px;height:280px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(0,212,255,.18) 0%,rgba(0,150,255,.08) 40%,transparent 70%);
+  border:2px solid rgba(0,212,255,.3);
+  box-shadow:0 0 60px rgba(0,212,255,.3), inset 0 0 40px rgba(0,212,255,.1);
+  animation:glow-pulse 3s ease-in-out infinite;
+  pointer-events:none;
+}
+/* Inner ring */
+.header::after{
+  content:'';
+  position:absolute;left:-52px;top:50%;transform:translateY(-50%);
+  width:210px;height:210px;
+  border-radius:50%;
+  border:2px solid rgba(0,212,255,.5);
+  box-shadow:0 0 30px rgba(0,212,255,.4);
+  animation:glow-pulse 3s ease-in-out infinite reverse;
+  pointer-events:none;
+}
+/* Scan line effect */
+.header-scan{
+  position:absolute;inset:0;overflow:hidden;pointer-events:none;
+}
+.header-scan::after{
+  content:'';position:absolute;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(0,212,255,.4),transparent);
+  animation:scan 4s linear infinite;
+}
+/* Right purple RAM glow */
+.header-rgb{
+  position:absolute;right:0;top:0;bottom:0;width:4px;
+  background:linear-gradient(180deg,#ff00ff,#7700ff,#0044ff,#00ffff,#0044ff,#7700ff,#ff00ff);
+  background-size:100% 200%;
+  animation:rgb-shift 3s linear infinite;
+  box-shadow:0 0 12px rgba(150,0,255,.8),0 0 25px rgba(0,212,255,.4);
+}
+.header-inner{
+  min-height:20vh;
+  padding:1.5rem 2rem;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;
+  position:relative;z-index:2;
+}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.header-center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;flex:1;}
+.header-left{display:flex;flex-direction:column;justify-content:center;}
+
+/* SIDEBAR CONTEXTE */
+.body-layout{display:flex;align-items:flex-start;gap:0;}
+.sidebar{width:15vw;min-width:190px;max-width:280px;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;
+  background:linear-gradient(180deg,#020c14 0%,#031a2e 60%,#041e38 100%);
+  border-right:1px solid rgba(0,212,255,.2);
+  padding:1.5rem 1.2rem;
+  box-shadow:4px 0 20px rgba(0,100,255,.08);
+}
+.sidebar-logo{font-family:'Orbitron',sans-serif;font-size:.65rem;font-weight:700;color:rgba(0,212,255,.6);letter-spacing:3px;text-transform:uppercase;margin-bottom:1.2rem;padding-bottom:.8rem;border-bottom:1px solid rgba(0,212,255,.2);}
+.sidebar-title{font-family:'Orbitron',sans-serif;font-size:.72rem;font-weight:700;color:rgba(0,212,255,.85);letter-spacing:2px;text-transform:uppercase;margin-bottom:.8rem;display:flex;align-items:center;gap:.4rem;}
+.sidebar-title::before{content:'';display:block;width:3px;height:14px;background:#00d4ff;border-radius:2px;flex-shrink:0;}
+.sidebar-body{font-size:.85rem;color:rgba(210,235,255,.75);line-height:1.9;margin-bottom:1.2rem;}
+.sidebar-divider{height:1px;background:rgba(0,212,255,.15);margin:1.1rem 0;}
+.sidebar-kpi{background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.2);border-radius:8px;padding:.8rem 1rem;margin-bottom:.7rem;}
+.sidebar-kpi-label{font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:rgba(0,212,255,.55);margin-bottom:.35rem;}
+.sidebar-kpi-val{font-size:.95rem;font-weight:700;color:rgba(0,220,255,.9);}
+.sidebar-meta{font-family:'Orbitron',sans-serif;font-size:.55rem;color:rgba(0,212,255,.4);letter-spacing:2px;text-transform:uppercase;margin-top:1rem;line-height:2;}
+.content-wrap{flex:1;min-width:0;}
+@media(max-width:700px){.sidebar{display:none;}.body-layout{display:block;}}
+.header-left .pixel,.header-center .pixel{
+  font-family:'Orbitron',sans-serif;font-size:.75rem;font-weight:400;
+  color:rgba(255,255,255,.55);letter-spacing:3px;text-transform:uppercase;margin-bottom:.6rem;
+}
+.header-left h1,.header-center h1{
+  font-family:'Orbitron',sans-serif;font-size:clamp(1.8rem,3.5vw,3rem);font-weight:900;
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+  background:none !important;
+  letter-spacing:5px;text-shadow:0 0 18px rgba(0,212,255,.6), 0 2px 8px rgba(0,0,0,.5);
+  margin-bottom:.5rem;line-height:1.1;
+}
+.header-author{
+  font-family:'Orbitron',sans-serif;font-size:.75rem;font-weight:400;
+  color:rgba(255,255,255,.75);letter-spacing:4px;text-transform:uppercase;
+  text-shadow:0 0 8px rgba(0,212,255,.4);
+}
+.header-right{display:none;}
+.header-btns{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-top:.7rem;}
+.header-inner #period-badge-wrap{color:rgba(255,255,255,.45);font-size:.68rem;text-align:center;font-family:'Orbitron',sans-serif;letter-spacing:1px;margin-top:.4rem;}
+.header-inner #period-badge{color:rgba(0,212,255,.9);font-weight:700;}
+/* Override buttons in header for dark bg */
+.header-inner .btn-sec{
+  background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.35);
+  color:rgba(0,212,255,.85);font-size:.7rem;
+}
+.header-inner .btn-sec:hover{background:rgba(0,212,255,.18);border-color:rgba(0,212,255,.7);color:#00d4ff;}
+.header-inner #period-badge-wrap{color:rgba(0,212,255,.6);font-size:.75rem;text-align:right;font-family:'Orbitron',sans-serif;font-weight:400;letter-spacing:1px;}
+.header-inner #period-badge{color:#00d4ff;font-weight:700;}
+
+/* LEADERBOARD */
+.leaderboard{background:linear-gradient(135deg,#020c14,#031a2e);border-bottom:2px solid rgba(0,212,255,.25);padding:.6rem 1.5rem;display:flex;gap:.6rem;align-items:stretch;flex-wrap:wrap;}
+.lb-title{font-family:'Orbitron',sans-serif;font-size:.58rem;color:rgba(0,212,255,.6);letter-spacing:2px;text-transform:uppercase;white-space:nowrap;display:flex;align-items:center;margin-right:.3rem;}
+.lb-entry{display:flex;align-items:center;gap:.55rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:.4rem .75rem;flex:1;min-width:200px;transition:border-color .3s;}
+.lb-entry.lb-1st{border-color:rgba(255,215,0,.5);background:rgba(255,215,0,.06);}
+.lb-entry.lb-2nd{border-color:rgba(192,192,192,.4);background:rgba(192,192,192,.04);}
+.lb-entry.lb-3rd{border-color:rgba(205,127,50,.4);background:rgba(205,127,50,.04);}
+.lb-entry.lb-player{border-color:rgba(249,115,22,.6) !important;background:rgba(249,115,22,.06) !important;}
+.lb-rank{font-family:'Press Start 2P',monospace;font-size:.7rem;width:1.5rem;text-align:center;flex-shrink:0;}
+.lb-info{flex:1;min-width:0;}
+.lb-name{font-weight:700;font-size:.78rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lb-dec{font-size:.6rem;color:rgba(180,210,255,.55);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:.15rem;}
+.lb-rex{font-family:'Orbitron',sans-serif;font-size:.72rem;font-weight:700;white-space:nowrap;flex-shrink:0;}
+.lb-rex.pos{color:#4ade80;}.lb-rex.neg{color:#f87171;}.lb-rex.neu{color:rgba(0,212,255,.75);}
+
+/* DASHBOARD */
+.dashboard{background:var(--panel);border-bottom:1px solid var(--border);padding:.8rem 1.5rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.6rem;}
+.dash-item{text-align:center;}
+.dash-label{font-size:.6rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:.2rem;}
+.dash-val{font-size:1.1rem;font-weight:800;}
+.dash-val.pos{color:var(--green);}
+.dash-val.neg{color:var(--red);}
+.dash-val.neu{color:var(--accent2);}
+
+/* PERIOD NAV */
+.period-nav{background:var(--panel);border-bottom:1px solid var(--border);padding:.7rem 1.5rem;display:flex;gap:.4rem;overflow-x:auto;flex-wrap:nowrap;}
+.period-chip{min-width:52px;padding:.4rem .6rem;border-radius:6px;border:1px solid var(--border);background:var(--panel2);color:var(--muted);font-size:.7rem;font-weight:600;cursor:default;text-align:center;transition:all .2s;white-space:nowrap;}
+.period-chip.active{border-color:var(--accent);background:rgba(249,115,22,.15);color:var(--accent);}
+.period-chip.done{border-color:var(--green);background:rgba(34,197,94,.1);color:var(--green);cursor:pointer;}
+.period-chip.locked{opacity:.35;}
+
+/* SUBSTEP INDICATOR */
+.substep-bar{display:flex;align-items:center;gap:.3rem;padding:.7rem 1.5rem;background:var(--panel2);border-bottom:1px solid var(--border);overflow-x:auto;}
+.ss{font-size:.65rem;font-weight:600;padding:.3rem .7rem;border-radius:4px;white-space:nowrap;border:1px solid var(--border);color:var(--muted);}
+.ss.active{background:rgba(249,115,22,.15);border-color:var(--accent);color:var(--accent);}
+.ss.done{background:rgba(34,197,94,.1);border-color:var(--green);color:var(--green);}
+.ss-arrow{color:var(--border);font-size:.6rem;}
+
+/* MAIN */
+.main{max-width:860px;margin:0 auto;padding:1.5rem 1.2rem;}
+
+/* CARDS */
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:1.3rem;margin-bottom:1.2rem;}
+.card-title{font-size:.9rem;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
+
+/* PRICE BOARD */
+.price-board{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.8rem;margin-bottom:1rem;}
+.price-card{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:1rem;position:relative;overflow:hidden;}
+.price-card::before{content:attr(data-mat);position:absolute;right:.5rem;bottom:.3rem;font-size:2.5rem;opacity:.05;font-weight:900;}
+.price-mat{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:.3rem;}
+.price-val{font-size:1.6rem;font-weight:800;color:var(--text);margin-bottom:.2rem;}
+.price-unit{font-size:.7rem;color:var(--muted);}
+.price-change{display:inline-flex;align-items:center;gap:.3rem;font-size:.75rem;font-weight:700;padding:.2rem .5rem;border-radius:4px;margin-top:.4rem;}
+.price-change.up{background:rgba(239,68,68,.15);color:var(--red);}
+.price-change.down{background:rgba(34,197,94,.15);color:var(--green);}
+.price-change.flat{background:rgba(100,116,139,.15);color:var(--muted);}
+.price-base{font-size:.65rem;color:var(--muted);margin-top:.2rem;}
+
+/* NEWS */
+.news-box{background:linear-gradient(135deg,#fff7ed,#eff6ff);border:1px solid var(--accent);border-radius:10px;padding:1rem 1.2rem;margin-bottom:1rem;font-size:.85rem;line-height:1.8;}
+.news-box strong{color:var(--accent);}
+.alert-box{background:rgba(239,68,68,.08);border:1px solid var(--red);border-radius:8px;padding:.7rem 1rem;margin-bottom:.8rem;font-size:.82rem;color:var(--red);font-weight:600;}
+
+/* BUDGET FORM */
+.budget-table{width:100%;border-collapse:collapse;margin-bottom:1rem;}
+.budget-table th{background:var(--panel2);padding:.6rem .8rem;text-align:left;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);border-bottom:2px solid var(--border);}
+.budget-table th:last-child{text-align:right;}
+.budget-table td{padding:.55rem .8rem;border-bottom:1px solid rgba(45,55,72,.5);font-size:.85rem;vertical-align:middle;}
+.budget-table tr.subtotal td{background:rgba(124,141,180,.06);font-weight:700;}
+.budget-table tr.total td{background:rgba(249,115,22,.08);font-weight:800;font-size:.9rem;border-top:2px solid var(--accent);}
+.budget-table tr.given td{color:var(--muted);}
+.budget-input{background:var(--panel3);border:2px solid var(--border);border-radius:6px;color:var(--text);font-family:'Inter',sans-serif;font-size:.85rem;font-weight:700;padding:.35rem .6rem;text-align:right;width:130px;transition:border-color .2s;}
+.budget-input:focus{outline:none;border-color:var(--accent2);}
+.budget-input.ok{border-color:var(--green);background:rgba(34,197,94,.08);color:var(--green);}
+.budget-input.ko{border-color:var(--red);background:rgba(239,68,68,.08);}
+.budget-input.rev{border-color:var(--yellow);background:rgba(234,179,8,.08);color:var(--yellow);}
+.given-val{color:var(--muted);font-weight:600;font-size:.85rem;}
+
+/* DECISION CARDS */
+.dec-group{margin-bottom:1.3rem;}
+.dec-group-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent2);margin-bottom:.7rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);}
+.dec-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.6rem;}
+.dec-opt{background:var(--panel2);border:2px solid var(--border);border-radius:9px;padding:.9rem;cursor:pointer;transition:all .2s;position:relative;}
+.dec-opt:hover{border-color:var(--accent);transform:translateY(-1px);}
+.dec-opt.sel{border-color:var(--accent2);background:rgba(56,189,248,.07);}
+.dec-opt.sel::after{content:'✓';position:absolute;top:.4rem;right:.6rem;color:var(--accent2);font-weight:800;}
+.dec-opt.unavail{opacity:.4;cursor:not-allowed;pointer-events:none;}
+.dec-opt-emoji{font-size:1.4rem;margin-bottom:.3rem;}
+.dec-opt-label{font-weight:700;font-size:.85rem;margin-bottom:.3rem;}
+.dec-opt-desc{font-size:.73rem;color:var(--muted);line-height:1.5;margin-bottom:.5rem;}
+.dec-tags{display:flex;flex-wrap:wrap;gap:.3rem;}
+.tag{font-size:.62rem;font-weight:600;padding:.15rem .45rem;border-radius:3px;}
+.tg{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.25);}
+.tr{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.25);}
+.ty{background:rgba(234,179,8,.12);color:var(--yellow);border:1px solid rgba(234,179,8,.25);}
+.tb{background:rgba(56,189,248,.12);color:var(--accent2);border:1px solid rgba(56,189,248,.25);}
+
+/* ECART TABLE */
+.ecart-table{width:100%;border-collapse:collapse;font-size:.82rem;margin-bottom:1rem;}
+.ecart-table th{background:var(--panel2);padding:.55rem .7rem;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);border-bottom:2px solid var(--border);}
+.ecart-table th:not(:first-child){text-align:right;}
+.ecart-table td{padding:.5rem .7rem;border-bottom:1px solid rgba(45,55,72,.4);}
+.ecart-table td:not(:first-child){text-align:right;font-weight:600;}
+.ecart-table .fav{color:var(--green);}
+.ecart-table .def{color:var(--red);}
+.ecart-table .neutral{color:var(--muted);}
+.ecart-table tr.total-row td{background:rgba(249,115,22,.07);font-weight:800;border-top:2px solid var(--accent);}
+
+/* PERIOD SUMMARY */
+.period-summary{background:var(--panel2);border-radius:10px;padding:1.2rem;margin-bottom:1rem;}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-top:.8rem;}
+.sum-item{text-align:center;}
+.sum-label{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.3rem;}
+.sum-val{font-size:1.1rem;font-weight:800;}
+
+/* EVOLUTION CHART (text-based) */
+.sparkline{display:flex;align-items:flex-end;gap:2px;height:50px;padding:.5rem 0;}
+.spark-bar{flex:1;min-width:6px;border-radius:2px 2px 0 0;transition:height .3s;}
+.spark-bar.pos{background:var(--green);}
+.spark-bar.neg{background:var(--red);}
+
+/* TREND ARROWS */
+.trend-up{color:var(--red);}
+.trend-down{color:var(--green);}
+.trend-flat{color:var(--muted);}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1.2rem;border-radius:7px;border:none;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;}
+.btn-primary{background:var(--accent);color:white;}
+.btn-primary:hover{background:#ea6c05;transform:translateY(-1px);}
+.btn-primary:disabled{background:#4a3020;color:#7a6050;cursor:not-allowed;transform:none;}
+.btn-sec{background:var(--panel2);border:1px solid var(--border);color:var(--text);}
+.btn-sec:hover{border-color:var(--accent2);color:var(--accent2);}
+.btn-green{background:var(--green);color:white;}
+.btn-green:hover{background:#16a34a;}
+.btn-group{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem;}
+
+/* HINT */
+.hint{background:rgba(56,189,248,.05);border-left:3px solid var(--accent2);padding:.65rem .9rem;margin-bottom:.9rem;border-radius:0 7px 7px 0;font-size:.8rem;color:var(--muted);}
+.hint strong{color:var(--accent2);}
+
+/* TEACHER MODAL */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;padding:1rem;}
+.modal.show{display:flex;}
+.modal-box{background:var(--panel);border:2px solid var(--accent);border-radius:14px;padding:1.5rem;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;}
+.t-row{display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid var(--border);font-size:.8rem;}
+.t-val{font-weight:700;color:var(--accent2);}
+.t-fav{color:var(--green);}
+.t-def{color:var(--red);}
+
+/* TEACHER BTN */
+.teacher-btn{position:fixed;bottom:1rem;right:1rem;background:var(--accent);color:white;border:none;border-radius:50px;padding:.55rem .9rem;font-family:'Inter',sans-serif;font-size:.7rem;font-weight:700;cursor:pointer;z-index:100;box-shadow:0 4px 20px rgba(249,115,22,.35);}
+
+/* ── MODE PROJECTION ── */
+body.proj{font-size:115%;}
+body.proj .main{max-width:1000px;}
+body.proj .budget-input{width:160px;font-size:1rem;padding:.5rem .8rem;}
+body.proj .card-title{font-size:1.1rem;}
+body.proj .price-val{font-size:2rem;}
+body.proj .btn{font-size:.95rem;padding:.75rem 1.4rem;}
+body.proj .hint{font-size:.92rem;}
+body.proj .budget-table td,body.proj .budget-table th{font-size:.95rem;padding:.7rem 1rem;}
+body.proj .ecart-table td,body.proj .ecart-table th{font-size:.92rem;padding:.65rem .9rem;}
+body.proj .dec-opt-label{font-size:1rem;}
+body.proj .dec-opt-desc{font-size:.85rem;}
+body.proj .dash-val{font-size:1.35rem;}
+body.proj .price-ref-val{font-size:1.35rem;}
+body.proj .given-val{font-size:1rem;}
+body.proj textarea{font-size:.92rem !important;}
+
+/* ── TIMER ── */
+#timer-widget{position:fixed;bottom:4.5rem;right:1rem;z-index:101;background:var(--panel);border:2px solid var(--border);border-radius:12px;padding:.6rem .9rem;box-shadow:0 4px 16px rgba(0,0,0,.12);min-width:130px;text-align:center;display:none;}
+#timer-widget.show{display:block;}
+#calc-widget{position:fixed;bottom:4.5rem;right:155px;z-index:101;background:var(--panel);border:2px solid var(--border);border-radius:12px;padding:.7rem;box-shadow:0 4px 16px rgba(0,0,0,.12);width:220px;display:none;}
+#calc-widget.show{display:block;}
+#calc-screen{background:var(--panel2);border:1px solid var(--border);border-radius:7px;padding:.4rem .7rem;text-align:right;font-family:'Press Start 2P',monospace;font-size:.75rem;margin-bottom:.5rem;min-height:2.2rem;color:var(--text);word-break:break-all;}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.3rem;}
+.calc-btn{background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:.45rem 0;font-size:.78rem;font-weight:700;cursor:pointer;color:var(--text);transition:all .15s;}
+.calc-btn:hover{border-color:var(--accent2);color:var(--accent2);}
+.calc-btn.op{background:rgba(56,189,248,.08);color:var(--accent2);}
+.calc-btn.eq{background:var(--accent);color:white;border-color:var(--accent);}
+.calc-btn.eq:hover{background:#ea6c05;}
+.calc-btn.clr{background:rgba(239,68,68,.1);color:var(--red);border-color:rgba(239,68,68,.3);}
+.calc-btn.span2{grid-column:span 2;}
+#timer-display{font-family:'Press Start 2P',monospace;font-size:1.2rem;letter-spacing:2px;margin-bottom:.4rem;}
+#timer-display.warn{color:var(--red);}
+#timer-display.ok{color:var(--green);}
+.timer-btns{display:flex;gap:.3rem;justify-content:center;flex-wrap:wrap;}
+.timer-btn{background:var(--panel2);border:1px solid var(--border);border-radius:5px;padding:.2rem .5rem;font-size:.65rem;font-weight:700;cursor:pointer;color:var(--text);}
+.timer-btn:hover{border-color:var(--accent2);}
+.timer-presets{display:flex;gap:.3rem;justify-content:center;margin-bottom:.4rem;flex-wrap:wrap;}
+.timer-preset{background:var(--panel3);border:1px solid var(--border);border-radius:4px;padding:.15rem .45rem;font-size:.62rem;font-weight:600;cursor:pointer;color:var(--muted);}
+.timer-preset:hover{color:var(--accent);border-color:var(--accent);}
+
+/* ── MODAL CORRIGÉ PASSWORD ── */
+#pwd-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:250;align-items:center;justify-content:center;}
+#pwd-modal.show{display:flex;}
+#pwd-box{background:var(--panel);border:2px solid var(--accent);border-radius:14px;padding:1.5rem;width:300px;text-align:center;}
+#pwd-input{width:100%;background:var(--panel2);border:2px solid var(--border);border-radius:7px;color:var(--text);font-family:'Inter',sans-serif;font-size:1.1rem;font-weight:700;padding:.5rem;text-align:center;letter-spacing:4px;margin:.8rem 0;}
+#pwd-input:focus{outline:none;border-color:var(--accent);}
+#pwd-error{font-size:.75rem;color:var(--red);margin-bottom:.5rem;min-height:1rem;}
+
+/* NOTIF */
+.notif{position:fixed;top:1rem;right:1rem;background:var(--panel);border:1px solid var(--green);color:var(--green);padding:.55rem .9rem;border-radius:7px;font-size:.8rem;font-weight:600;transform:translateX(200%);transition:transform .3s;z-index:300;}
+.notif.show{transform:translateX(0);}
+
+/* SCORE */
+.score-box{background:var(--panel2);border-radius:10px;padding:1rem;text-align:center;display:none;margin-top:.8rem;}
+.score-box.show{display:block;}
+
+/* DIFFICULTY BADGE */
+.diff-badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.62rem;font-weight:700;padding:.25rem .6rem;border-radius:5px;margin-bottom:.8rem;}
+.diff-full{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.3);}
+.diff-totals{background:rgba(234,179,8,.12);color:var(--yellow);border:1px solid rgba(234,179,8,.3);}
+.diff-result{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.3);}
+
+/* QCM */
+.qcm-opt{background:var(--panel2);border:1.5px solid var(--border);border-radius:7px;padding:.5rem .85rem;font-size:.82rem;cursor:pointer;transition:all .18s;color:var(--text);}
+.qcm-opt:hover{border-color:var(--accent2);color:var(--accent2);background:rgba(56,189,248,.06);}
+.score-big{font-family:'Press Start 2P',monospace;font-size:1.3rem;margin:.3rem 0;}
+.score-big.g{color:var(--green);}
+.score-big.y{color:var(--yellow);}
+.score-big.r{color:var(--red);}
+
+/* MATERIAL LEGEND */
+.mat-legend{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:.8rem;}
+.mat-leg{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--muted);}
+.mat-dot{width:10px;height:10px;border-radius:50%;}
+
+/* EVENT CARDS */
+.event-flash{border-radius:12px;padding:1.2rem;margin-bottom:1rem;position:relative;overflow:hidden;}
+.event-flash.crisis{background:linear-gradient(135deg,#fff1f2,#fef2f2);border:2px solid var(--red);}
+.event-flash.opportunity{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:2px solid var(--green);}
+.event-flash.neutral{background:linear-gradient(135deg,#fffbeb,#fef3c7);border:2px solid var(--yellow);}
+.event-flash::after{content:attr(data-emoji);position:absolute;right:.8rem;top:.8rem;font-size:3rem;opacity:.08;}
+.evbadge{display:inline-block;font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:2px;padding:.2rem .6rem;border-radius:3px;margin-bottom:.5rem;}
+.event-flash.crisis .evbadge{background:rgba(239,68,68,.2);color:var(--red);border:1px solid var(--red);}
+.event-flash.opportunity .evbadge{background:rgba(34,197,94,.2);color:var(--green);border:1px solid var(--green);}
+.event-flash.neutral .evbadge{background:rgba(234,179,8,.2);color:var(--yellow);border:1px solid var(--yellow);}
+.evtitle{font-family:'Press Start 2P',monospace;font-size:.65rem;line-height:1.5;margin-bottom:.6rem;}
+.event-flash.crisis .evtitle{color:var(--red);}
+.event-flash.opportunity .evtitle{color:var(--green);}
+.event-flash.neutral .evtitle{color:var(--yellow);}
+.evbody{font-size:.83rem;color:var(--text);line-height:1.8;}
+.evdetail{font-size:.76rem;color:var(--muted);margin-top:.4rem;font-style:italic;}
+.evimpact{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.7rem;}
+.evimpact span{font-size:.72rem;font-weight:700;padding:.2rem .5rem;border-radius:4px;}
+.evimpact .up{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3);}
+.evimpact .down{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3);}
+.evimpact .flat{background:rgba(100,116,139,.15);color:var(--muted);border:1px solid rgba(100,116,139,.3);}
+
+/* PRICE REFERENCE PANEL (in budget form) */
+.price-ref{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-bottom:1rem;background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:.8rem;}
+.price-ref-item{text-align:center;}
+.price-ref-label{font-size:.6rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:.2rem;}
+.price-ref-val{font-size:1.1rem;font-weight:800;color:var(--accent2);}
+.price-ref-unit{font-size:.62rem;color:var(--muted);}
+.price-ref-chg{font-size:.68rem;font-weight:700;margin-top:.2rem;}
+.price-ref-chg.up{color:var(--red);}
+.price-ref-chg.down{color:var(--green);}
+.price-ref-chg.flat{color:var(--muted);}
+
+/* RECRUITMENT */
+.recruit-intro{background:linear-gradient(135deg,#eff6ff,#f0f9ff);border:2px solid var(--accent2);border-radius:12px;padding:1.2rem;margin-bottom:1.2rem;}
+.recruit-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.2rem;}
+@media(max-width:600px){.recruit-grid{grid-template-columns:1fr;}}
+.cv-card{background:var(--panel2);border:2px solid var(--border);border-radius:12px;padding:1.2rem;transition:all .2s;cursor:pointer;position:relative;}
+.cv-card:hover{border-color:var(--accent2);transform:translateY(-2px);}
+.cv-card.sel{border-color:var(--accent2);background:rgba(56,189,248,.08);}
+.cv-card.sel::after{content:'✓ SÉLECTIONNÉ';position:absolute;top:.5rem;right:.6rem;font-size:.55rem;font-weight:800;color:var(--accent2);letter-spacing:1px;}
+.cv-avatar{font-size:2.5rem;margin-bottom:.5rem;}
+.cv-name{font-family:'Press Start 2P',monospace;font-size:.5rem;color:var(--accent);margin-bottom:.4rem;}
+.cv-title{font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:.3rem;}
+.cv-detail{font-size:.73rem;color:var(--muted);line-height:1.7;margin-bottom:.6rem;}
+.cv-salary{display:inline-block;background:rgba(249,115,22,.15);border:1px solid rgba(249,115,22,.4);color:var(--accent);font-size:.72rem;font-weight:700;padding:.2rem .6rem;border-radius:4px;}
+.interview-section{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:1.2rem;margin-bottom:1.2rem;}
+.interview-q{background:var(--panel);border-left:3px solid var(--accent2);padding:.7rem .9rem;margin-bottom:.4rem;border-radius:0 7px 7px 0;font-size:.82rem;font-weight:600;color:var(--text);}
+.interview-answers{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:1rem;}
+@media(max-width:600px){.interview-answers{grid-template-columns:1fr;}}
+.answer-card{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:.7rem .8rem;}
+.answer-name{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.3rem;color:var(--accent2);}
+.answer-text{font-size:.77rem;color:var(--muted);line-height:1.6;font-style:italic;}
+.recruit-verdict{border-radius:12px;padding:1.2rem;margin-top:.8rem;}
+.recruit-verdict.good{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:2px solid var(--green);}
+.recruit-verdict.bad{background:linear-gradient(135deg,#fff1f2,#fef2f2);border:2px solid var(--red);}
+.recruit-verdict-title{font-family:'Press Start 2P',monospace;font-size:.6rem;margin-bottom:.6rem;}
+.recruit-verdict.good .recruit-verdict-title{color:var(--green);}
+.recruit-verdict.bad .recruit-verdict-title{color:var(--red);}
+
+/* PROGRESS RING (text based) */
+.progress-text{font-size:.75rem;color:var(--muted);margin-bottom:.5rem;}
+.prog-bar{height:4px;background:var(--panel2);border-radius:99px;overflow:hidden;margin-bottom:1rem;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;transition:width .4s;}
+
+/* SCORE RECAP per period */
+.period-done-badge{display:inline-block;background:rgba(34,197,94,.15);border:1px solid var(--green);color:var(--green);font-size:.65rem;font-weight:700;padding:.2rem .5rem;border-radius:4px;margin-left:.5rem;}
+
+@media(max-width:600px){
+  .budget-input{width:100px;}
+  .dec-options{grid-template-columns:1fr;}
+  .dashboard{grid-template-columns:1fr 1fr;}
+}
+
+/* ── ÉCRAN D'ACCUEIL ── */
+#welcome-screen{
+  position:fixed;inset:0;z-index:500;
+  background:linear-gradient(135deg,#020c14 0%,#031a2e 40%,#041e38 70%,#06122a 100%);
+  display:flex;align-items:center;justify-content:center;
+  padding:1.5rem;
+  overflow:hidden;
+}
+#welcome-screen.hidden{display:none;}
+/* Orb décoratif */
+#welcome-screen::before{
+  content:'';position:absolute;left:-120px;top:50%;transform:translateY(-50%);
+  width:500px;height:500px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,212,255,.12) 0%,transparent 65%);
+  border:1px solid rgba(0,212,255,.15);
+  pointer-events:none;
+}
+#welcome-screen::after{
+  content:'';position:absolute;right:-80px;bottom:-80px;
+  width:350px;height:350px;border-radius:50%;
+  background:radial-gradient(circle,rgba(249,115,22,.08) 0%,transparent 65%);
+  pointer-events:none;
+}
+.welcome-box{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(0,212,255,.25);
+  border-radius:20px;
+  padding:2.5rem 2.8rem;
+  max-width:460px;width:100%;
+  box-shadow:0 0 60px rgba(0,212,255,.1), 0 20px 60px rgba(0,0,0,.5);
+  position:relative;z-index:1;
+  text-align:center;
+}
+.welcome-logo{
+  font-family:'Orbitron',sans-serif;font-size:.6rem;font-weight:700;
+  color:rgba(0,212,255,.55);letter-spacing:4px;text-transform:uppercase;
+  margin-bottom:.8rem;
+}
+.welcome-title{
+  font-family:'Orbitron',sans-serif;font-size:clamp(1.6rem,5vw,2.4rem);
+  font-weight:900;color:#fff;letter-spacing:4px;
+  text-shadow:0 0 20px rgba(0,212,255,.5);
+  margin-bottom:.4rem;
+}
+.welcome-sub{
+  font-size:.78rem;color:rgba(200,230,255,.55);
+  letter-spacing:1px;margin-bottom:2rem;
+}
+.welcome-field{margin-bottom:1.1rem;text-align:left;}
+.welcome-field label{
+  display:block;font-size:.65rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:1.5px;color:rgba(0,212,255,.65);margin-bottom:.45rem;
+}
+.welcome-field input,.welcome-field select{
+  width:100%;background:rgba(0,212,255,.06);
+  border:1px solid rgba(0,212,255,.25);border-radius:8px;
+  color:#fff;font-family:'Inter',sans-serif;font-size:.95rem;font-weight:500;
+  padding:.65rem 1rem;outline:none;
+  transition:border-color .2s,box-shadow .2s;
+}
+.welcome-field input::placeholder{color:rgba(255,255,255,.25);}
+.welcome-field input:focus,.welcome-field select:focus{
+  border-color:rgba(0,212,255,.6);
+  box-shadow:0 0 0 3px rgba(0,212,255,.1);
+}
+.welcome-field select option{background:#031a2e;color:#fff;}
+.welcome-error{
+  font-size:.72rem;color:#f87171;margin-top:-.5rem;margin-bottom:.8rem;
+  min-height:1rem;display:none;
+}
+.welcome-error.show{display:block;}
+.welcome-start{
+  width:100%;background:linear-gradient(135deg,var(--accent),#f97316);
+  color:#fff;border:none;border-radius:10px;
+  font-family:'Orbitron',sans-serif;font-size:.75rem;font-weight:700;
+  letter-spacing:2px;text-transform:uppercase;
+  padding:.9rem 1.5rem;cursor:pointer;
+  box-shadow:0 4px 20px rgba(249,115,22,.35);
+  transition:all .2s;margin-top:.5rem;
+}
+.welcome-start:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(249,115,22,.45);}
+.welcome-footer{
+  font-size:.6rem;color:rgba(255,255,255,.25);letter-spacing:1px;
+  margin-top:1.4rem;font-family:'Orbitron',sans-serif;
+}
+</style>
+</head>
+<body>
+
+<!-- ÉCRAN D'ACCUEIL -->
+<div id="welcome-screen">
+  <div class="welcome-box">
+    <div class="welcome-logo">🏗️ Sciences de Gestion · 1ère STMG</div>
+    <div class="welcome-title">BatiPro</div>
+    <div class="welcome-sub">Simulation de gestion annuelle · BTP</div>
+
+    <div class="welcome-field">
+      <label>Votre prénom &amp; nom</label>
+      <input id="w-name" type="text" placeholder="ex : Marie Dupont" maxlength="40"
+             onkeydown="if(event.key==='Enter')startWithPlayer()">
+    </div>
+
+    <div class="welcome-field">
+      <label>Votre classe</label>
+      <select id="w-class">
+        <option value="" disabled selected>— Sélectionner —</option>
+        <option>1ère STMG A</option>
+        <option>1ère STMG B</option>
+        <option>1ère STMG C</option>
+        <option>1ère STMG D</option>
+        <option>1ère STMG E</option>
+        <option>Terminale STMG</option>
+        <option>Autre</option>
+      </select>
+    </div>
+
+    <div class="welcome-error" id="w-error">Merci de renseigner votre nom et votre classe.</div>
+
+    <button class="welcome-start" onclick="startWithPlayer()">
+      ▶ &nbsp;Commencer la simulation
+    </button>
+    <div class="welcome-footer">par Beslier Denis &nbsp;·&nbsp; Lycée</div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-scan"></div>
+  <div class="header-rgb"></div>
+  <div class="header-inner">
+    <div class="header-center">
+      <div class="pixel">Simulation annuelle BTP</div>
+      <h1>BatiPro SARL</h1>
+      <div class="header-author">par &nbsp;Beslier Denis</div>
+      <div class="header-btns">
+        <button class="btn btn-sec" style="padding:.4rem .8rem;" onclick="S.showHome=true;render();">🗓️ Agenda</button>
+        <button class="btn btn-sec" id="proj-btn" style="padding:.4rem .8rem;" onclick="toggleProj()">🔍 Projection</button>
+        <button class="btn btn-sec" id="timer-toggle-btn" style="padding:.4rem .8rem;" onclick="toggleTimer()">⏱️ Minuteur</button>
+        <button class="btn btn-sec" id="calc-toggle-btn" style="padding:.4rem .8rem;" onclick="toggleCalc()">🧮 Calculatrice</button>
+      </div>
+      <div id="period-badge-wrap">
+        Simulation · 12 mois &nbsp;|&nbsp; <span id="period-badge">Période 1/12</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="body-layout">
+
+<!-- SIDEBAR CONTEXTE -->
+<aside class="sidebar">
+  <div class="sidebar-logo">🏗️ Sciences de Gestion</div>
+
+  <div class="sidebar-title">Contexte</div>
+  <p class="sidebar-body">
+    BatiPro SARL est une PME de <strong style="color:rgba(0,212,255,.8)">15 salariés</strong>
+    basée à <strong style="color:rgba(0,212,255,.8)">Lyon</strong>, spécialisée dans la
+    construction et la rénovation de bâtiments.
+  </p>
+  <p class="sidebar-body">
+    Vous êtes son <strong style="color:rgba(0,212,255,.8)">responsable de gestion</strong>.
+    Chaque mois, vous achetez des matières premières sur des marchés volatils et pilotez
+    la rentabilité de l'entreprise.
+  </p>
+
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-title">Matières premières</div>
+  <div class="sidebar-kpi">
+    <div class="sidebar-kpi-label">⚙️ Acier</div>
+    <div class="sidebar-kpi-val">30 t / mois</div>
+  </div>
+  <div class="sidebar-kpi">
+    <div class="sidebar-kpi-label">🪵 Bois</div>
+    <div class="sidebar-kpi-val">50 m³ / mois</div>
+  </div>
+  <div class="sidebar-kpi">
+    <div class="sidebar-kpi-label">🏗️ Béton</div>
+    <div class="sidebar-kpi-val">250 m³ / mois</div>
+  </div>
+
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-title">Charges fixes</div>
+  <div class="sidebar-kpi">
+    <div class="sidebar-kpi-label">Structure</div>
+    <div class="sidebar-kpi-val">35 000 € / mois</div>
+  </div>
+  <div class="sidebar-kpi">
+    <div class="sidebar-kpi-label">CA contractuel</div>
+    <div class="sidebar-kpi-val">150 000 € / mois</div>
+  </div>
+
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-meta">
+    1ère STMG · BTP<br>
+    Simulation 12 mois<br>
+    Beslier Denis
+  </div>
+</aside>
+
+<!-- CONTENU PRINCIPAL -->
+<div class="content-wrap">
+
+<!-- LEADERBOARD -->
+<div class="leaderboard" id="leaderboard">
+  <div class="lb-title">🏆 Classement</div>
+  <div class="lb-entry lb-1st lb-player">
+    <div class="lb-rank">🥇</div>
+    <div class="lb-info"><div class="lb-name">🏗️ Votre entreprise</div><div class="lb-dec">Aucune décision encore</div></div>
+    <div class="lb-rex neu">—</div>
+  </div>
+  <div class="lb-entry lb-2nd">
+    <div class="lb-rank">🥈</div>
+    <div class="lb-info"><div class="lb-name">⚡ AlphaBTP</div><div class="lb-dec">En attente…</div></div>
+    <div class="lb-rex neu">—</div>
+  </div>
+  <div class="lb-entry lb-3rd">
+    <div class="lb-rank">🥉</div>
+    <div class="lb-info"><div class="lb-name">🔧 BêtaCon</div><div class="lb-dec">En attente…</div></div>
+    <div class="lb-rex neu">—</div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard">
+  <div class="dash-item">
+    <div class="dash-label">Période</div>
+    <div class="dash-val neu" id="d-period">1 / 12</div>
+  </div>
+  <div class="dash-item">
+    <div class="dash-label">CA cumulé</div>
+    <div class="dash-val neu" id="d-ca">—</div>
+  </div>
+  <div class="dash-item">
+    <div class="dash-label">Résultat cumulé</div>
+    <div class="dash-val" id="d-rex">—</div>
+  </div>
+  <div class="dash-item">
+    <div class="dash-label">Meilleur mois</div>
+    <div class="dash-val g" id="d-best">—</div>
+  </div>
+  <div class="dash-item">
+    <div class="dash-label">Pire mois</div>
+    <div class="dash-val r" id="d-worst">—</div>
+  </div>
+  <div class="dash-item">
+    <div class="dash-label">Acier base→actuel</div>
+    <div class="dash-val" id="d-acier">800 €/t</div>
+  </div>
+</div>
+
+<!-- PERIOD NAV -->
+<div class="period-nav" id="period-nav"></div>
+
+<!-- SUBSTEP BAR -->
+<div class="substep-bar" id="substep-bar"></div>
+
+<!-- MAIN CONTENT -->
+<div class="main" id="main-content"></div>
+
+<!-- TEACHER MODAL -->
+<div class="modal" id="teacher-modal">
+  <div class="modal-box">
+    <div style="font-family:'Press Start 2P',monospace;font-size:.6rem;color:var(--accent);margin-bottom:1rem;">🏫 CORRIGÉ ENSEIGNANT</div>
+    <div id="teacher-content"></div>
+    <button class="btn btn-sec" style="margin-top:1rem;width:100%;" onclick="document.getElementById('teacher-modal').classList.remove('show')">Fermer</button>
+  </div>
+</div>
+<button class="teacher-btn" onclick="askTeacherPwd()">🏫 Corrigé</button>
+<div class="notif" id="notif">✓ Réponses vérifiées</div>
+
+<!-- TIMER WIDGET -->
+<div id="timer-widget">
+  <div style="font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.3rem;">⏱️ Minuteur</div>
+  <div id="timer-display" class="ok">05:00</div>
+  <div class="timer-presets">
+    <span class="timer-preset" onclick="setTimer(2)">2'</span>
+    <span class="timer-preset" onclick="setTimer(5)">5'</span>
+    <span class="timer-preset" onclick="setTimer(10)">10'</span>
+    <span class="timer-preset" onclick="setTimer(15)">15'</span>
+  </div>
+  <div class="timer-btns">
+    <button class="timer-btn" onclick="startTimer()">▶</button>
+    <button class="timer-btn" onclick="pauseTimer()">⏸</button>
+    <button class="timer-btn" onclick="resetTimer()">↺</button>
+  </div>
+</div>
+
+<!-- CALCULATOR WIDGET -->
+<div id="calc-widget">
+  <div style="font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem;">🧮 Calculatrice</div>
+  <div id="calc-screen">0</div>
+  <div class="calc-grid">
+    <button class="calc-btn clr" onclick="calcClear()">C</button>
+    <button class="calc-btn op" onclick="calcSign()">+/−</button>
+    <button class="calc-btn op" onclick="calcPct()">%</button>
+    <button class="calc-btn op" onclick="calcOp('/')">÷</button>
+
+    <button class="calc-btn" onclick="calcNum('7')">7</button>
+    <button class="calc-btn" onclick="calcNum('8')">8</button>
+    <button class="calc-btn" onclick="calcNum('9')">9</button>
+    <button class="calc-btn op" onclick="calcOp('*')">×</button>
+
+    <button class="calc-btn" onclick="calcNum('4')">4</button>
+    <button class="calc-btn" onclick="calcNum('5')">5</button>
+    <button class="calc-btn" onclick="calcNum('6')">6</button>
+    <button class="calc-btn op" onclick="calcOp('-')">−</button>
+
+    <button class="calc-btn" onclick="calcNum('1')">1</button>
+    <button class="calc-btn" onclick="calcNum('2')">2</button>
+    <button class="calc-btn" onclick="calcNum('3')">3</button>
+    <button class="calc-btn op" onclick="calcOp('+')">+</button>
+
+    <button class="calc-btn span2" onclick="calcNum('0')">0</button>
+    <button class="calc-btn" onclick="calcDot()">.</button>
+    <button class="calc-btn eq" onclick="calcEquals()">=</button>
+  </div>
+</div>
+
+<!-- PASSWORD MODAL -->
+<div id="pwd-modal">
+  <div id="pwd-box">
+    <div style="font-family:'Press Start 2P',monospace;font-size:.55rem;color:var(--accent);margin-bottom:.6rem;">🏫 CORRIGÉ ENSEIGNANT</div>
+    <div style="font-size:.82rem;color:var(--muted);margin-bottom:.3rem;">Code d'accès :</div>
+    <input id="pwd-input" type="password" maxlength="10" placeholder="••••" onkeydown="if(event.key==='Enter')checkPwd()">
+    <div id="pwd-error"></div>
+    <div style="display:flex;gap:.5rem;justify-content:center;">
+      <button class="btn btn-primary" onclick="checkPwd()">Valider</button>
+      <button class="btn btn-sec" onclick="document.getElementById('pwd-modal').classList.remove('show')">Annuler</button>
+    </div>
+    <div style="font-size:.7rem;color:var(--muted);margin-top:.8rem;">Code par défaut : <strong>STMG</strong></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// BASE DATA
+// ══════════════════════════════════════════
+const BASE = { ca:150000, acier_qty:30, bois_qty:50, beton_qty:250, mo_var:25000, cf:35000 };
+// Multiplicateur de prix aléatoire — appliqué dans getEffectivePrices()
+let GAME_PRICE_SCALE = 1.0;
+
+const MONTHS = [
+  { name:'Janvier',   short:'Jan', prices:{acier:800,  bois:400, beton:120},
+    news:'📊 Début d\'exercice. Carnet de commandes <strong>complet</strong>. Marché des matériaux en situation normale.',
+    alert:null },
+  { name:'Février',   short:'Fév', prices:{acier:864,  bois:396, beton:122},
+    news:'🌏 Reprise industrielle mondiale : la demande asiatique en acier repart fortement (+8%). Légère baisse du bois, béton quasi stable.',
+    alert:'⚠️ L\'acier est en hausse. Avez-vous intérêt à sécuriser vos achats ?' },
+  { name:'Mars',      short:'Mar', prices:{acier:950,  bois:385, beton:125},
+    news:'⚡ Tensions commerciales sino-américaines : l\'acier poursuit sa hausse (+10% supplémentaires). Le bois bénéficie d\'un surplus canadien (−3%).',
+    alert:'🚨 Acier à 950 €/t : +18% par rapport à janvier !' },
+  { name:'Avril',     short:'Avr', prices:{acier:920,  bois:390, beton:125},
+    news:'📉 Légère correction de l\'acier (−3%). Le marché du bois se stabilise. Béton inchangé. Reprise saisonnière des chantiers.',
+    alert:null },
+  { name:'Mai',       short:'Mai', prices:{acier:905,  bois:408, beton:145},
+    news:'🏭 <strong>GRÈVE</strong> dans une cimenterie majeure de Marseille : le béton bondit de <strong>+16%</strong> ! Bois en légère hausse saisonnière. Acier se détend légèrement.',
+    alert:'⚠️ Béton en forte hausse ce mois-ci ! La substitution acier→béton est déconseillée.' },
+  { name:'Juin',      short:'Jun', prices:{acier:860,  bois:415, beton:140},
+    news:'✅ Fin de la grève : le béton redescend (−3%). L\'acier continue sa correction. Bois en légère hausse.',
+    alert:null },
+  { name:'Juillet',   short:'Jul', prices:{acier:825,  bois:450, beton:138},
+    news:'🌵 <strong>Sécheresse en Europe du Nord</strong> : coupes forestières réduites, prix du bois en forte hausse (+8%). Acier en baisse continue.',
+    alert:'⚠️ Bois au plus haut depuis le début de l\'année.' },
+  { name:'Août',      short:'Aoû', prices:{acier:818,  bois:445, beton:137},
+    news:'😴 Période estivale calme. Légères baisses générales. Quelques chantiers décalés en septembre. Activité ralentie.',
+    alert:null },
+  { name:'Septembre', short:'Sep', prices:{acier:875,  bois:430, beton:140},
+    news:'🔨 Reprise des chantiers. La demande en acier repart à la hausse (+7%). Bois se détend progressivement.',
+    alert:'💡 Acier repart à la hausse : moment de sécuriser vos achats futurs ?' },
+  { name:'Octobre',   short:'Oct', prices:{acier:1100, bois:435, beton:143},
+    news:'🚨 <strong>CRISE ÉNERGÉTIQUE EUROPÉENNE</strong> : l\'électricité manque dans les aciéries. L\'acier explose <strong>+26%</strong> en un mois ! Tous les acteurs du BTP sont sous pression.',
+    alert:'🚨 CRISE : Acier à 1 100 €/t. Décision cruciale ce mois-ci !' },
+  { name:'Novembre',  short:'Nov', prices:{acier:1080, bois:425, beton:138},
+    news:'📊 L\'acier reste à des niveaux très élevés malgré une légère détente (−2%). Le béton se détend légèrement.',
+    alert:'⚠️ Acier toujours au-dessus de 1 000 €/t. La substitution béton armé peut être intéressante.' },
+  { name:'Décembre',  short:'Déc', prices:{acier:960,  bois:415, beton:130},
+    news:'🎄 Correction de fin d\'année : l\'acier redescend significativement (−11%). Marché qui se normalise. Bilan de l\'exercice à faire.',
+    alert:'💡 Acier en baisse : achat au marché avantageux ce mois.' },
+];
+
+// ══════════════════════════════════════════
+// RANDOM EVENTS POOL
+// ══════════════════════════════════════════
+const EVENTS_POOL = [
+  { id:'war_east', type:'crisis', emoji:'⚔️', badge:'🚨 CONFLIT GÉOPOLITIQUE',
+    title:'GUERRE EN EUROPE DE L\'EST',
+    desc:'Un conflit armé éclate dans une région productrice d\'acier. Les routes commerciales sont coupées et les exportations bloquées par les sanctions internationales.',
+    detail:'La zone concernée fournit 18% de l\'acier mondial. Les cours s\'envolent sur les marchés à terme.',
+    mods:{ acier:1.22, bois:1.0, beton:1.06 } },
+  { id:'tariff_us', type:'crisis', emoji:'🛡️', badge:'📢 DROITS DE DOUANE',
+    title:'SURTAXE AMÉRICAINE SUR L\'ACIER (+25%)',
+    desc:'Washington impose une surtaxe de 25% sur les importations d\'acier. Les producteurs asiatiques redirigent leurs ventes vers l\'Europe, perturbant les prix locaux.',
+    detail:'Les contrats long terme sont renégociés. Les petites entreprises du BTP subissent la hausse immédiatement.',
+    mods:{ acier:1.18, bois:1.0, beton:1.0 } },
+  { id:'suez', type:'crisis', emoji:'🚢', badge:'🚨 BLOCAGE MARITIME',
+    title:'CANAL DE SUEZ BLOQUÉ — 3 SEMAINES',
+    desc:'Un porte-containers géant s\'échoue dans le Canal de Suez. Les livraisons de bois tropical et de ciment sont fortement retardées dans toute l\'Europe.',
+    detail:'La France importe 40% de son bois via cette route. Les stocks de chantier s\'épuisent rapidement.',
+    mods:{ acier:1.0, bois:1.28, beton:1.15 } },
+  { id:'drought', type:'crisis', emoji:'🌵', badge:'🌍 CATASTROPHE CLIMATIQUE',
+    title:'SÉCHERESSE EXCEPTIONNELLE EN SCANDINAVIE',
+    desc:'Une sécheresse historique frappe les forêts nordiques. Les coupes de bois sont interdites dans plusieurs régions pour préserver les écosystèmes forestiers.',
+    detail:'La Scandinavie fournit 35% du bois de construction européen. La pénurie tire les prix vers le haut.',
+    mods:{ acier:1.0, bois:1.32, beton:1.0 } },
+  { id:'energy', type:'crisis', emoji:'⚡', badge:'⚡ CRISE ÉNERGÉTIQUE',
+    title:'PÉNURIE D\'ÉLECTRICITÉ DANS LES ACIÉRIES',
+    desc:'Une vague de froid extrême provoque une consommation record. Les aciéries réduisent leur production de 30%. Effet immédiat sur les cours mondiaux.',
+    detail:'La production d\'acier nécessite 400 kWh par tonne. La baisse de production crée une pénurie artificielle.',
+    mods:{ acier:1.25, bois:1.0, beton:1.08 } },
+  { id:'china', type:'crisis', emoji:'🏗️', badge:'📈 DEMANDE MONDIALE',
+    title:'PLAN D\'INFRASTRUCTURES CHINOIS : 1 000 MDS $',
+    desc:'Pékin annonce un plan massif de construction d\'infrastructures. La demande mondiale en matériaux de construction explose. Tous les prix grimpent simultanément.',
+    detail:'Les traders anticipent une pénurie de 6 mois sur les marchés. Les contrats à terme s\'envolent.',
+    mods:{ acier:1.15, bois:1.12, beton:1.18 } },
+  { id:'port_strike', type:'crisis', emoji:'🚩', badge:'🚩 GRÈVE NATIONALE',
+    title:'GRÈVE DES PORTS ET TRANSPORTS ROUTIERS',
+    desc:'Un mouvement social bloque les ports français pendant 2 semaines. Les importations de matériaux de construction sont paralysées sur tout le territoire.',
+    detail:'BatiPro dépend des importations pour 60% de ses approvisionnements. Les délais s\'allongent de 3 à 5 semaines.',
+    mods:{ acier:1.08, bois:1.22, beton:1.20 } },
+  { id:'sanctions', type:'crisis', emoji:'🔒', badge:'🌐 SANCTIONS ÉCONOMIQUES',
+    title:'SANCTIONS CONTRE UN MAJOR FOURNISSEUR D\'ACIER',
+    desc:'L\'Union Européenne vote des sanctions économiques contre un pays exportateur d\'acier majeur. Les échanges commerciaux sont gelés dans les 48h.',
+    detail:'Ce pays représente 12% des exportations d\'acier vers l\'UE. Le marché absorbe difficilement le choc.',
+    mods:{ acier:1.20, bois:1.0, beton:1.04 } },
+  { id:'new_tech', type:'opportunity', emoji:'🔬', badge:'✨ INNOVATION TECHNOLOGIQUE',
+    title:'NOUVEAU MATÉRIAU DE SUBSTITUTION AU BÉTON',
+    desc:'Un fabricant européen lance un composite à base de chanvre qui remplace partiellement le béton. L\'adoption est rapide dans le secteur BTP.',
+    detail:'La concurrence du nouveau matériau fait baisser les prix du béton traditionnel de façon durable.',
+    mods:{ acier:1.0, bois:1.0, beton:0.82 } },
+  { id:'overproduction', type:'opportunity', emoji:'📦', badge:'✅ SURPRODUCTION MONDIALE',
+    title:'SURPRODUCTION D\'ACIER EN ASIE',
+    desc:'Les aciéries asiatiques annoncent des surcapacités massives. Les exportations à bas prix inondent le marché européen, faisant chuter les cours.',
+    detail:'La concurrence asiatique tire les prix de l\'acier européen à la baisse. Excellente opportunité d\'achat.',
+    mods:{ acier:0.84, bois:1.0, beton:1.0 } },
+  { id:'currency', type:'neutral', emoji:'💱', badge:'💱 CHOC MONÉTAIRE',
+    title:'CHUTE DE L\'EURO FACE AU DOLLAR (−12%)',
+    desc:'L\'euro perd 12% face au dollar en 3 semaines, suite à une crise politique en zone euro. Les matières premières cotées en dollars deviennent plus chères.',
+    detail:'L\'acier et le ciment sont partiellement importés et cotés en dollars. La facture en euros augmente mécaniquement.',
+    mods:{ acier:1.12, bois:1.0, beton:1.10 } },
+  { id:'flooding', type:'crisis', emoji:'🌊', badge:'🌧️ INONDATIONS',
+    title:'INONDATIONS EN EUROPE CENTRALE',
+    desc:'Des inondations exceptionnelles frappent les principales carrières de granulats et usines de ciment d\'Europe centrale. La production est arrêtée.',
+    detail:'Les carrières touchées représentent 20% de la production de granulats européens utilisés dans le béton.',
+    mods:{ acier:1.0, bois:1.05, beton:1.24 } },
+];
+
+// ══════════════════════════════════════════
+// RECRUITMENT DATA
+// ══════════════════════════════════════════
+const CANDIDATES = [
+  {
+    id: 'thomas',
+    avatar: '👨‍💼',
+    name: 'Thomas DUBOIS',
+    age: 35,
+    title: 'Ingénieur BTP – Grands projets',
+    education: 'École d\'ingénieurs (ESTP), Master Génie Civil',
+    experience: '10 ans – gestion de projets d\'infrastructure (autoroutes, ponts), équipes de 30+ personnes',
+    skills: 'Gestion de grands chantiers, management d\'équipes, maîtrise des normes européennes',
+    salary: 55000,
+    salaryLabel: '55 000 €/an',
+    cfMonthly: Math.round(55000/12),
+    weakness: 'Habitué aux grands groupes. Peu d\'expérience PME, peu de maîtrise des coûts d\'achat matières.'
+  },
+  {
+    id: 'sofia',
+    avatar: '👩‍💼',
+    name: 'Sofia MARTIN',
+    age: 28,
+    title: 'Conductrice de travaux – PME BTP',
+    education: 'BTS Bâtiment, Licence Pro Gestion de Chantier',
+    experience: '5 ans – coordination de chantiers en PME BTP (15–25 personnes), gestion des achats matières',
+    skills: 'Optimisation des coûts d\'achat, négociation fournisseurs, organisation des approvisionnements',
+    salary: 38000,
+    salaryLabel: '38 000 €/an',
+    cfMonthly: Math.round(38000/12),
+    weakness: 'Moins d\'expérience que Thomas sur les grands projets. Portfolio limité aux chantiers PME.'
+  }
+];
+
+const INTERVIEW_QUESTIONS = [
+  {
+    question: '🏗️ Q1 – Comment gérez-vous un chantier quand les prix des matériaux augmentent fortement en cours de mission ?',
+    answers: {
+      thomas: 'Sur les grands projets, on anticipe dans les contrats-cadres pluriannuels. L\'augmentation est absorbée par les marges de sécurité ou refacturée au client.',
+      sofia: 'Je renégocie directement avec les fournisseurs, je cherche des alternatives de substitution, et j\'active les clauses de révision de prix avec les clients. J\'ai déjà réduit les coûts acier de 8% en passant sur un contrat trimestriel.'
+    }
+  },
+  {
+    question: '📊 Q2 – Quelle est votre approche pour établir un budget prévisionnel mensuel sur un chantier ?',
+    answers: {
+      thomas: 'On travaille avec les services financiers du groupe. Le contrôle de gestion établit les budgets consolidés. Mon rôle est plutôt la validation des devis.',
+      sofia: 'Je construis le budget directement : je calcule les consommations prévisionnelles de chaque matériau selon les indices de prix, j\'anticipe les variations saisonnières et je compare chaque mois au réalisé pour ajuster les décisions.'
+    }
+  },
+  {
+    question: '🤝 Q3 – BatiPro est une PME de 15 salariés à Lyon. Comment adapteriez-vous votre style de management à cette taille d\'entreprise ?',
+    answers: {
+      thomas: 'J\'ai l\'habitude de manager des équipes plus importantes mais je suis adaptable. Cependant, je préfère disposer d\'un budget suffisant et d\'une autonomie importante pour mettre en place mes méthodes.',
+      sofia: 'Je viens du même environnement ! Dans une PME, chaque euro compte. Je suis habituée à être polyvalente : à la fois sur le terrain et dans le bureau. Je connais tous mes fournisseurs par leur prénom — c\'est un avantage énorme pour négocier.'
+    }
+  }
+];
+
+const CORRECT_RECRUIT = 'sofia'; // Sofia est le bon choix
+
+// ══════════════════════════════════════════
+// PGI DATA
+// ══════════════════════════════════════════
+const PGI_OPTIONS = [
+  {
+    id: 'progest',
+    emoji: '🖥️',
+    name: 'ProGest PME',
+    editor: 'Éditeur : Sage France',
+    type: 'Licence perpétuelle (prix fixe)',
+    priceLine: 'Achat unique : 48 000 € HT',
+    cfMonthly: 800,  // amortissement 48000/60 mois
+    cfLabel: '+800 €/mois (amortissement 48 000 € ÷ 60 mois)',
+    details: 'Logiciel installé sur vos serveurs. Licence définitive pour 15 utilisateurs. Mises à jour majeures payantes (~5 000 €/an). Maintenance assurée par votre DSI.',
+    pros: ['Propriété définitive du logiciel','Pas de coût récurrent hors maintenance','Données hébergées en interne (sécurité)','Personnalisation avancée possible'],
+    cons: ['Investissement initial élevé (48 000 €)','Mises à jour majeures facturées','Nécessite une infrastructure serveur','Dépannage à la charge de l\'entreprise'],
+  },
+  {
+    id: 'clouderp',
+    emoji: '☁️',
+    name: 'CloudERP BTP',
+    editor: 'Éditeur : Cegid Cloud',
+    type: 'Abonnement SaaS (5 ans)',
+    priceLine: '1 500 €/mois × 60 mois = 90 000 € total',
+    cfMonthly: 1500,
+    cfLabel: '+1 500 €/mois (abonnement)',
+    details: 'Solution 100 % cloud, accessible depuis tablette ou téléphone sur chantier. Mises à jour automatiques incluses. Support 24/7. Engagement 5 ans.',
+    pros: ['Zéro investissement initial','Mises à jour et maintenance incluses','Accessible depuis n\'importe quel appareil','Support technique 24/7 inclus'],
+    cons: ['Coût total plus élevé (90 000 €)','Données hébergées chez un tiers','Engagement contractuel 5 ans','Dépendance à la connexion internet'],
+  }
+];
+
+const CORRECT_PGI = 'clouderp'; // CloudERP est le meilleur choix pour une PME en croissance
+
+const PGI_QCM = [
+  {
+    q: 'Que signifie l\'acronyme PGI ?',
+    opts: ['Progiciel de Gestion Intégré','Programme de Gestion Informatique','Projet de Gestion des Investissements','Processus de Gestion des Informations'],
+    ok: 0,
+    expl: 'PGI = Progiciel de Gestion Intégré. En anglais : ERP (Enterprise Resource Planning).'
+  },
+  {
+    q: 'Quel est le principal avantage d\'un PGI par rapport à des logiciels séparés ?',
+    opts: ['Il est moins cher','Il centralise toutes les données dans une base unique partagée entre services','Il remplace le comptable','Il fonctionne sans internet'],
+    ok: 1,
+    expl: 'L\'intégration signifie qu\'une donnée saisie une seule fois (ex : une facture achat) est immédiatement visible dans la comptabilité, les stocks et la trésorerie.'
+  },
+  {
+    q: 'Un PGI est organisé en :',
+    opts: ['Dossiers et fichiers Excel','Virus et antivirus','Modules fonctionnels interconnectés (achat, vente, RH, compta…)','Réseaux sociaux internes'],
+    ok: 2,
+    expl: 'Chaque module gère un domaine métier (achats, ventes, stocks, RH, comptabilité…) et partage les données avec les autres modules en temps réel.'
+  },
+  {
+    q: 'Pour BatiPro SARL (PME BTP, 15 salariés), un PGI peut aider à :',
+    opts: ['Construire des bâtiments plus vite','Suivre les coûts matières, les chantiers et la trésorerie en temps réel','Remplacer les architectes','Automatiser la pose du béton'],
+    ok: 1,
+    expl: 'Dans le BTP, un PGI permet de suivre les coûts par chantier, les achats matières, la facturation clients et les charges sociales depuis une seule interface.'
+  },
+  {
+    q: 'Quelle est la différence entre une licence perpétuelle et un abonnement SaaS ?',
+    opts: ['Aucune, c\'est la même chose','La licence perpétuelle est toujours moins chère','La licence perpétuelle = achat unique (propriété) ; le SaaS = paiement mensuel (location)','Le SaaS ne fonctionne que sur Mac'],
+    ok: 2,
+    expl: 'Licence perpétuelle : vous achetez et possédez le logiciel. SaaS : vous louez l\'accès au logiciel hébergé dans le cloud, avec mises à jour automatiques incluses.'
+  },
+  {
+    q: 'Quel est l\'inconvénient principal d\'un abonnement SaaS sur 5 ans ?',
+    opts: ['Il est trop simple à utiliser','Le coût total peut dépasser celui d\'une licence achetée','Il ne gère pas la comptabilité','Il faut imprimer toutes les données'],
+    ok: 1,
+    expl: 'Sur 5 ans, 1 500 €/mois = 90 000 €, contre 48 000 € pour une licence fixe. Mais le SaaS inclut maintenance, support et mises à jour, ce qui réduit l\'écart réel.'
+  }
+];
+
+// ══════════════════════════════════════════
+// DECISIONS CONFIG
+// ══════════════════════════════════════════
+const DEC_A = [
+  {
+    label:'Acheter au cours du marché', emoji:'📈',
+    desc:'Achat d\'acier au prix affiché ce mois. Pas de garantie pour le futur.',
+    tags:[{t:'Prix du marché',c:'tb'},{t:'Aucune prime',c:'tg'}],
+    getPrice:(curr,prev)=> curr.acier,
+    getQty:()=> BASE.acier_qty,
+    betonExtra:0
+  },
+  {
+    label:'Contrat cadre fournisseur', emoji:'📄',
+    desc:'Prix bloqué = cours du mois précédent + 2% (prime de garantie). Sécurité mais coût si le marché baisse.',
+    tags:[{t:'Prix sécurisé',c:'ty'},{t:'+2% prime',c:'tr'}],
+    getPrice:(curr,prev)=> prev.acier * 1.02,
+    getQty:()=> BASE.acier_qty,
+    betonExtra:0
+  },
+  {
+    label:'Substitution béton armé', emoji:'🔄',
+    desc:'Réduire l\'acier de 30% et compenser par du béton armé (+25 m³). Intéressant si l\'acier est très cher.',
+    tags:[{t:'Acier −30%',c:'tg'},{t:'Béton +25 m³',c:'ty'},{t:'Acier ×0,70',c:'tg'}],
+    getPrice:(curr,prev)=> curr.acier,
+    getQty:()=> Math.round(BASE.acier_qty * 0.70),
+    betonExtra:25
+  }
+];
+
+const DEC_B = [
+  {
+    label:'Prix contractuel fixe', emoji:'🤝',
+    desc:'Respecter le contrat initial conclu avec les clients. CA garanti = 150 000 €.',
+    tags:[{t:'CA = 150 000 €',c:'tb'},{t:'Sécurité relation client',c:'tg'}],
+    caValue:150000
+  },
+  {
+    label:'Clause de révision prix (+4%)', emoji:'💰',
+    desc:'Activer la clause d\'indexation prévue au contrat. Les clients acceptent une hausse de 4%.',
+    tags:[{t:'CA = 156 000 €',c:'tg'},{t:'+6 000 € vs fixe',c:'tg'}],
+    caValue:156000
+  }
+];
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+// ══════════════════════════════════════════
+// AGENDA — MISSIONS MENSUELLES
+// ══════════════════════════════════════════
+const MONTHLY_MISSIONS = [
+  { period:0,  icon:'👥', type:'special',  label:'Recrutement',         desc:'Embaucher un(e) responsable chantier parmi 2 candidats présentés en entretien.',              tag:'Mission spéciale' },
+  { period:1,  icon:'💻', type:'special',  label:'Choix du PGI',         desc:'BatiPro doit s\'équiper d\'un PGI. QCM de connaissances, entretien avec 2 éditeurs, puis décision stratégique.',  tag:'Mission spéciale' },
+  { period:2,  icon:'⚡', type:'alert',    label:'Acier en forte hausse',desc:'L\'acier a grimpé de +18% depuis janvier. Faut-il sécuriser les achats via contrat cadre ?',   tag:'Alerte marché' },
+  { period:3,  icon:'📉', type:'standard', label:'Correction de marché', desc:'L\'acier se détend légèrement. Reprise saisonnière des chantiers. Planifier les achats.',     tag:'Gestion courante' },
+  { period:4,  icon:'🏭', type:'crisis',   label:'Crise cimenterie',     desc:'GRÈVE à Marseille : béton +16% en une semaine. Décision urgente sur l\'approvisionnement !',  tag:'Crise' },
+  { period:5,  icon:'✅', type:'standard', label:'Fin de grève',         desc:'Le béton se normalise. L\'acier continue sa correction. Gérer les achats à court terme.',     tag:'Gestion courante' },
+  { period:6,  icon:'🌵', type:'alert',    label:'Sécheresse — bois',    desc:'Pénurie de bois en Europe du Nord (+8%). Aucune décision de substitution disponible.',        tag:'Alerte marché' },
+  { period:7,  icon:'😴', type:'standard', label:'Période estivale',     desc:'Activité ralentie, quelques chantiers décalés. Optimiser les coûts pendant la trêve.',       tag:'Gestion courante' },
+  { period:8,  icon:'🔨', type:'alert',    label:'Reprise + acier rehausse',desc:'Les chantiers reprennent. L\'acier repart à +7%. Anticiper les tensions du 4ème trimestre.',tag:'Alerte marché' },
+  { period:9,  icon:'🚨', type:'crisis',   label:'CRISE ACIER — urgence', desc:'Acier +26% en un mois ! Crise énergétique européenne. Décision stratégique cruciale !',      tag:'Crise majeure' },
+  { period:10, icon:'⚠️', type:'alert',    label:'Acier > 1 000 €/t',   desc:'Acier toujours très élevé malgré une légère détente. Substitution béton armé pertinente ?',   tag:'Alerte marché' },
+  { period:11, icon:'🎄', type:'special',  label:'Bilan annuel',         desc:'Fin d\'exercice. Corriger le dernier budget et analyser la performance de l\'année entière.', tag:'Mission spéciale' },
+];
+
+const MISSION_COLORS = {
+  standard: { border:'var(--border)',   bg:'var(--panel2)',      tag:'tb', dot:'#0369a1' },
+  alert:    { border:'#b45309',         bg:'#fffbeb',            tag:'ty', dot:'#b45309' },
+  crisis:   { border:'#dc2626',         bg:'#fff1f2',            tag:'tr', dot:'#dc2626' },
+  special:  { border:'#6d28d9',         bg:'#f5f3ff',            tag:'tb', dot:'#6d28d9' },
+};
+
+let S = {
+  period: 0,
+  subStep: 0,
+  showHome: true,   // true = afficher l'agenda d'accueil
+  playerName: '',
+  playerClass: '',
+  decA: null,
+  decB: null,
+  recruit: null,
+  recruitDone: false,
+  recruitStep: 0,
+  pgi: null,
+  pgiDone: false,
+  pgiStep: 0,    // 0=QCM, 1=Entretien, 2=Verdict
+  pgiQcm: {},    // { qIdx: chosenOptIdx }
+  history: [],
+  running: { ca:0, rex:0 },
+  assignedEvents: {},
+  indicesMalus: {},
+  compA: { runningRex:0, history:[], lastDec:null },  // Expert : AlphaBTP
+  compB: { runningRex:0, history:[], lastDec:null }   // Moyen  : BêtaCon
+};
+
+const SUBSTEP_LABELS = ['📰 Marché','📋 Budget prévisionnel','⚡ Décisions','🧮 Calculs réels','📊 Comparaison'];
+
+// ══════════════════════════════════════════
+// WELCOME SCREEN
+// ══════════════════════════════════════════
+function startWithPlayer() {
+  const name  = document.getElementById('w-name').value.trim();
+  const cls   = document.getElementById('w-class').value;
+  const errEl = document.getElementById('w-error');
+  if (!name || !cls) { errEl.classList.add('show'); return; }
+  errEl.classList.remove('show');
+  S.playerName  = name;
+  S.playerClass = cls;
+  // Masquer l'écran d'accueil
+  document.getElementById('welcome-screen').classList.add('hidden');
+  // Mettre à jour l'affichage du nom dans le header
+  const bw = document.getElementById('period-badge-wrap');
+  if (bw) bw.innerHTML = `${cls} &nbsp;|&nbsp; <span id="period-badge">Période 1/12</span> &nbsp;|&nbsp; <span style="color:rgba(0,212,255,.75);">👤 ${name}</span>`;
+  // Mettre à jour le leaderboard avec le vrai nom
+  renderLeaderboard();
+}
+
+// ══════════════════════════════════════════
+// RANDOMISATION — nouvelles valeurs à chaque partie
+// ══════════════════════════════════════════
+function randomizeGame() {
+  // Petite variation ±pct des valeurs de base
+  const rv = (base, pct) => Math.round(base * (1 + (Math.random() * 2 - 1) * pct));
+
+  // Quantités et charges (±8 à 12 %)
+  BASE.acier_qty = rv(30,  0.12);  // 26–34 t
+  BASE.bois_qty  = rv(50,  0.10);  // 45–55 m³
+  BASE.beton_qty = rv(250, 0.10);  // 225–275 m³
+  BASE.mo_var    = rv(25000, 0.10); // 22 500–27 500 €
+  BASE.cf        = rv(35000, 0.08); // 32 200–37 800 €
+  // BASE.ca reste 150 000 (cohérent avec DEC_B.caValue)
+
+  // Niveau de prix des matériaux ±10 % (les tendances mensuelles sont conservées)
+  GAME_PRICE_SCALE = parseFloat((0.90 + Math.random() * 0.20).toFixed(4));
+
+  // ── Noms des candidats au recrutement ──
+  const c0names = [
+    'Nicolas RENARD','Thomas DUBOIS','Laurent BERNARD',
+    'Pierre GARNIER','Julien MERCIER','Alexis LAMBERT','Sébastien FAURE'
+  ];
+  const c1names = [
+    'Sofia MARTIN','Emma PETIT','Lucie MOREAU',
+    'Marie LEROY','Julie BLANC','Camille DUPONT','Inès RICHARD'
+  ];
+  CANDIDATES[0].name = c0names[Math.floor(Math.random() * c0names.length)];
+  CANDIDATES[1].name = c1names[Math.floor(Math.random() * c1names.length)];
+}
+
+// ══════════════════════════════════════════
+// EVENT ASSIGNMENT
+// ══════════════════════════════════════════
+function assignEvents() {
+  // Assign events to months 1, 3, 5, 7, 9, 11 (bimonthly, 0-indexed = fév, avr, jun, aoû, oct, déc)
+  const slots = [1, 3, 5, 7, 9, 11];
+  const shuffled = [...EVENTS_POOL].sort(() => Math.random() - 0.5);
+  S.assignedEvents = {};
+  slots.forEach((m, i) => { if (shuffled[i]) S.assignedEvents[m] = shuffled[i]; });
+}
+
+function getEffectivePrices(pIdx) {
+  const base = MONTHS[pIdx].prices;
+  const evt = S.assignedEvents[pIdx];
+  const s = GAME_PRICE_SCALE;
+  // Appliquer le multiplicateur aléatoire sur les prix de base
+  const scaled = {
+    acier: Math.round(base.acier * s),
+    bois:  Math.round(base.bois  * s),
+    beton: Math.round(base.beton * s)
+  };
+  if (!evt) return scaled;
+  return {
+    acier: Math.round(scaled.acier * evt.mods.acier),
+    bois:  Math.round(scaled.bois  * evt.mods.bois),
+    beton: Math.round(scaled.beton * evt.mods.beton)
+  };
+}
+
+// ══════════════════════════════════════════
+// COMPUTATION
+// ══════════════════════════════════════════
+function getPrevPrices(pIdx) {
+  return pIdx === 0 ? getEffectivePrices(0) : getEffectivePrices(pIdx - 1);
+}
+
+function computeBudget(pIdx) {
+  const p = getEffectivePrices(pIdx);
+  const acier = Math.round(BASE.acier_qty * p.acier);
+  const bois  = Math.round(BASE.bois_qty  * p.bois);
+  const beton = Math.round(BASE.beton_qty * p.beton);
+  const cv    = acier + bois + beton + BASE.mo_var;
+  const recruitCF = getRecruitCF();
+  const pgiCF = getPgiCF(pIdx);
+  const cf    = BASE.cf + recruitCF + pgiCF;
+  const rex   = BASE.ca - cv - cf;
+  return { acier, bois, beton, mo_var: BASE.mo_var, cv, cf, ca: BASE.ca, rex, recruitCF, pgiCF };
+}
+
+function getRecruitCF() {
+  // Returns extra monthly CF from recruit
+  if (!S.recruitDone || !S.recruit) return 0;
+  const c = CANDIDATES.find(c=>c.id===S.recruit);
+  return c ? c.cfMonthly : 0;
+}
+function getPgiCF(pIdx) {
+  // PGI CF applies from period 1 onwards once chosen
+  if (!S.pgiDone || !S.pgi || pIdx < 1) return 0;
+  const p = PGI_OPTIONS.find(p=>p.id===S.pgi);
+  return p ? p.cfMonthly : 0;
+}
+
+function computeActual(pIdx, dA, dB) {
+  const curr = getEffectivePrices(pIdx);
+  const prev = getPrevPrices(pIdx);
+  const optA = DEC_A[dA];
+  const optB = DEC_B[dB];
+
+  // Sofia bonus: when using contrat cadre, her negotiation skill reduces prime from +2% to +1%
+  let acierPrice;
+  if (dA === 1 && S.recruit === 'sofia' && S.recruitDone) {
+    acierPrice = parseFloat((prev.acier * 1.01).toFixed(2)); // 1% au lieu de 2%
+  } else {
+    acierPrice = parseFloat(optA.getPrice(curr, prev).toFixed(2));
+  }
+  const acierQty   = optA.getQty();
+  const betonQty   = BASE.beton_qty + optA.betonExtra;
+
+  const acier = Math.round(acierQty * acierPrice);
+  const bois  = Math.round(BASE.bois_qty * curr.bois);
+  const beton = Math.round(betonQty * curr.beton);
+  const recruitCF = getRecruitCF();
+  const pgiCF = getPgiCF(pIdx);
+  const cf    = BASE.cf + recruitCF + pgiCF;
+  const cv    = acier + bois + beton + BASE.mo_var;
+  const ca    = optB.caValue;
+  const rex   = ca - cv - cf;
+  const rn    = rex > 0 ? Math.round(rex * 0.75) : rex;
+
+  return { acierPrice, acierQty, betonQty, acier, bois, beton, mo_var: BASE.mo_var, cv, ca, cf, rex, rn, recruitCF, pgiCF };
+}
+
+function computeEcarts(bgt, act) {
+  return {
+    ca:    act.ca    - bgt.ca,
+    acier: bgt.acier - act.acier,  // F si act < bgt (économisé)
+    bois:  bgt.bois  - act.bois,
+    beton: bgt.beton - act.beton,
+    cv:    bgt.cv    - act.cv,     // F si act < bgt
+    rex:   act.rex   - bgt.rex
+  };
+}
+
+// ══════════════════════════════════════════
+// CONCURRENTS IA
+// ══════════════════════════════════════════
+// Calcul réel sans recruit/PGI (décisions internes uniquement)
+function computeCompActual(pIdx, dA, dB) {
+  const curr = getEffectivePrices(pIdx);
+  const prev = getPrevPrices(pIdx);
+  const optA = DEC_A[dA];
+  const optB = DEC_B[dB];
+  const acierPrice = parseFloat(optA.getPrice(curr, prev).toFixed(2));
+  const acierQty   = optA.getQty();
+  const betonQty   = BASE.beton_qty + optA.betonExtra;
+  const acier = Math.round(acierQty * acierPrice);
+  const bois  = Math.round(BASE.bois_qty * curr.bois);
+  const beton = Math.round(betonQty * curr.beton);
+  const cv = acier + bois + beton + BASE.mo_var;
+  const rex = optB.caValue - cv - BASE.cf;
+  return { dA, dB, rex, ca: optB.caValue };
+}
+
+// Expert (AlphaBTP) : calcule la décision optimale à chaque période
+function pickExpertDecision(pIdx) {
+  const curr = getEffectivePrices(pIdx);
+  const prev = getPrevPrices(pIdx);
+  // Évaluer coût acier+béton pour chaque option Dec A
+  const costMarket = Math.round(BASE.acier_qty * curr.acier)            + Math.round(BASE.beton_qty * curr.beton);
+  const costCadre  = Math.round(BASE.acier_qty * prev.acier * 1.02)     + Math.round(BASE.beton_qty * curr.beton);
+  const costSubst  = Math.round(Math.round(BASE.acier_qty * 0.70) * curr.acier) + Math.round((BASE.beton_qty + 25) * curr.beton);
+  const minCost = Math.min(costMarket, costCadre, costSubst);
+  const dA = minCost === costSubst ? 2 : minCost === costCadre ? 1 : 0;
+  return { dA, dB: 1 }; // Always activates clause révision (+CA)
+}
+
+// Moyen (BêtaCon) : stratégie prudente fixe
+function pickAverageDecision(pIdx) {
+  // Contrat cadre (sécurité prix) + prix contractuel fixe
+  return { dA: 1, dB: 0 };
+}
+
+function getLastDecLabel(h) {
+  if (!h) return null;
+  const la = DEC_A[h.decA];
+  const lb = DEC_B[h.decB];
+  return `${la.emoji} ${la.label.split(' ').slice(0,3).join(' ')} · ${lb.emoji} ${lb.label.split(' ').slice(0,3).join(' ')}`;
+}
+
+function renderLeaderboard() {
+  const el = document.getElementById('leaderboard');
+  if (!el) return;
+  const played = S.history.length > 0;
+  const playerRex = S.running.rex;
+  const playerLabel = S.playerName ? `🏗️ ${S.playerName}` : '🏗️ Votre entreprise';
+  const entries = [
+    { name: playerLabel, rex: playerRex, isPlayer:true,
+      lastDec: S.history.length ? getLastDecLabel(S.history[S.history.length-1]) : null },
+    { name:'⚡ AlphaBTP', rex: S.compA.runningRex, isPlayer:false,
+      lastDec: S.compA.lastDec },
+    { name:'🔧 BêtaCon', rex: S.compB.runningRex, isPlayer:false,
+      lastDec: S.compB.lastDec }
+  ];
+  entries.sort((a,b) => b.rex - a.rex);
+  const rankEmoji  = ['🥇','🥈','🥉'];
+  const rankClass  = ['lb-1st','lb-2nd','lb-3rd'];
+  el.innerHTML = `<div class="lb-title">🏆 Classement</div>`
+    + entries.map((e,i) => {
+      const rexClass = e.rex > 0 ? 'pos' : e.rex < 0 ? 'neg' : 'neu';
+      const rexTxt   = played ? (e.rex >= 0 ? '+' : '') + fmt(e.rex) + ' €' : '—';
+      return `<div class="lb-entry ${rankClass[i]}${e.isPlayer ? ' lb-player' : ''}">
+        <div class="lb-rank">${rankEmoji[i]}</div>
+        <div class="lb-info">
+          <div class="lb-name">${e.name}</div>
+          <div class="lb-dec">${e.lastDec || 'Aucune décision encore'}</div>
+        </div>
+        <div class="lb-rex ${rexClass}">${rexTxt}</div>
+      </div>`;
+    }).join('');
+}
+
+function ecartLabel(v, invertSign=false) {
+  const val = invertSign ? -v : v;
+  if (val > 50)  return '<span class="fav">▲ '  + fmt(Math.abs(v)) + ' € (F)</span>';
+  if (val < -50) return '<span class="def">▼ ' + fmt(Math.abs(v)) + ' € (D)</span>';
+  return '<span class="neutral">≈ 0 €</span>';
+}
+
+function priceChange(curr, prev) {
+  if (!prev) return '';
+  const pct = ((curr - prev) / prev * 100).toFixed(1);
+  if (pct > 0.2)  return `<div class="price-change up">▲ +${pct}%</div>`;
+  if (pct < -0.2) return `<div class="price-change down">▼ ${pct}%</div>`;
+  return `<div class="price-change flat">≈ stable</div>`;
+}
+
+function fmt(n) { return Math.round(n).toLocaleString('fr'); }
+function fmtPrice(n) { return parseFloat(n).toLocaleString('fr', {minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+// ══════════════════════════════════════════
+// RENDER FUNCTIONS
+// ══════════════════════════════════════════
+function render() {
+  renderPeriodNav();
+  renderSubstepBar();
+  renderMainContent();
+  updateDashboard();
+  renderLeaderboard();
+}
+
+function renderPeriodNav() {
+  const nav = document.getElementById('period-nav');
+  nav.innerHTML = MONTHS.map((m, i) => {
+    let cls = 'period-chip locked';
+    if (i === S.period) cls = 'period-chip active';
+    else if (S.history.find(h => h.period === i)) cls = 'period-chip done';
+    else if (i <= S.history.length) cls = 'period-chip';
+    const done = S.history.find(h => h.period === i);
+    return `<div class="${cls}" onclick="jumpTo(${i})">${m.short}${done ? ' ✓' : ''}</div>`;
+  }).join('');
+  document.getElementById('period-badge').textContent = `Période ${S.period+1}/12`;
+  document.getElementById('d-period').textContent = `${S.period+1} / 12`;
+}
+
+function renderSubstepBar() {
+  const bar = document.getElementById('substep-bar');
+  let labels = SUBSTEP_LABELS;
+  let activeIdx = S.subStep;
+  if (S.period === 0) {
+    labels = ['👥 Recrutement', ...SUBSTEP_LABELS];
+    activeIdx = S.recruitDone ? S.subStep + 1 : 0;
+  }
+  if (S.period === 1 && !S.pgiDone) {
+    const pgiLabels = ['📝 QCM PGI', '🤝 Entretien', '✅ Décision'];
+    labels = [...pgiLabels, ...SUBSTEP_LABELS];
+    activeIdx = S.pgiStep;
+  }
+  bar.innerHTML = labels.map((l, i) => {
+    let cls = 'ss';
+    if (i === activeIdx) cls += ' active';
+    else if (i < activeIdx) cls += ' done';
+    return (i > 0 ? '<span class="ss-arrow">›</span>' : '') + `<span class="${cls}">${l}</span>`;
+  }).join('');
+}
+
+function renderMainContent() {
+  const el = document.getElementById('main-content');
+  // Home agenda
+  if (S.showHome) { el.innerHTML = renderHome(); return; }
+  // Recruitment (January, first time)
+  if (S.period === 0 && !S.recruitDone) { el.innerHTML = renderRecruitment(); return; }
+  // PGI selection (February, first time)
+  if (S.period === 1 && !S.pgiDone) { el.innerHTML = renderPGI(); return; }
+  switch(S.subStep) {
+    case 0: el.innerHTML = renderMarket(); break;
+    case 1: el.innerHTML = renderBudget(); break;
+    case 2: el.innerHTML = renderDecisions(); break;
+    case 3: el.innerHTML = renderCalculs(); break;
+    case 4: el.innerHTML = renderComparaison(); break;
+  }
+}
+
+// ── HOME / AGENDA ──
+function renderHome() {
+  const donePeriods = S.history.map(h => h.period);
+  const currentPeriod = S.history.length; // next period to play
+
+  const agendaCards = MONTHLY_MISSIONS.map((m, i) => {
+    const c = MISSION_COLORS[m.type];
+    const isDone = donePeriods.includes(m.period);
+    const isCurrent = m.period === currentPeriod && !isDone;
+    const isLocked = m.period > currentPeriod;
+    const hist = S.history.find(h => h.period === m.period);
+
+    let statusIcon = '';
+    let statusStyle = '';
+    if (isDone) {
+      statusIcon = `<div style="position:absolute;top:.5rem;right:.6rem;font-size:.6rem;font-weight:800;color:var(--green);letter-spacing:.5px;">✅ FAIT</div>`;
+      statusStyle = 'opacity:.7;';
+    } else if (isCurrent) {
+      statusIcon = `<div style="position:absolute;top:.5rem;right:.6rem;font-size:.6rem;font-weight:800;color:var(--accent);letter-spacing:.5px;animation:pulse 1.5s infinite;">▶ EN COURS</div>`;
+    } else if (isLocked) {
+      statusIcon = `<div style="position:absolute;top:.5rem;right:.6rem;font-size:.65rem;color:var(--muted);">🔒</div>`;
+      statusStyle = 'opacity:.45;pointer-events:none;';
+    }
+
+    const resultLine = isDone && hist ? `
+      <div style="margin-top:.5rem;font-size:.7rem;font-weight:700;color:${hist.actual.rex>=0?'var(--green)':'var(--red)'};">
+        ${hist.actual.rex>=0?'▲':'▼'} Résultat : ${fmt(hist.actual.rex)} €
+      </div>` : '';
+
+    const clickable = isCurrent && !S.showHome;
+    return `
+      <div style="background:${isLocked?'var(--panel2)':c.bg};border:2px solid ${isCurrent?'var(--accent)':isDone?'var(--green)':isLocked?'var(--border)':c.border};border-radius:12px;padding:1rem;position:relative;cursor:${isLocked?'default':'pointer'};transition:all .2s;${statusStyle}"
+           onclick="goToPeriod(${m.period})"
+           onmouseover="if(!${isLocked})this.style.transform='translateY(-2px)'"
+           onmouseout="this.style.transform='none'">
+        ${statusIcon}
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;">
+          <div style="width:28px;height:28px;background:${c.dot}22;border:1px solid ${c.dot}55;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">${isLocked ? '?' : m.icon}</div>
+          <div>
+            <div style="font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:${isLocked?'var(--muted)':c.dot};">${MONTHS[m.period].name}</div>
+            <div style="font-size:.78rem;font-weight:700;color:${isLocked?'var(--muted)':'var(--text)'};line-height:1.2;">${isLocked ? '— À venir —' : m.label}</div>
+          </div>
+        </div>
+        <div style="font-size:.72rem;color:var(--muted);line-height:1.6;">${isLocked ? 'Ce mois n\'est pas encore déverrouillé. Complétez les périodes précédentes pour découvrir la mission.' : m.desc}</div>
+        ${!isLocked ? `<div style="margin-top:.5rem;display:inline-block;font-size:.58rem;font-weight:700;padding:.15rem .45rem;border-radius:3px;" class="tag ${c.tag}">${m.tag}</div>` : ''}
+        ${resultLine}
+      </div>`;
+  }).join('');
+
+  // Stats summary if game in progress
+  const inProgress = S.history.length > 0;
+  const totRex = S.history.reduce((s,h)=>s+h.actual.rex, 0);
+  const totCA  = S.history.reduce((s,h)=>s+h.actual.ca, 0);
+  const pctDone = Math.round(S.history.length / 12 * 100);
+
+  const progressSection = inProgress ? `
+    <div style="background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:1.2rem;margin-bottom:1.5rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.8rem;align-items:center;">
+      <div style="text-align:center;">
+        <div style="font-size:.6rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:.3rem;">Progression</div>
+        <div style="font-size:1.3rem;font-weight:800;color:var(--accent2);">${S.history.length} <span style="font-size:.8rem;color:var(--muted)">/ 12</span></div>
+        <div class="prog-bar" style="margin-top:.5rem;margin-bottom:0;"><div class="prog-fill" style="width:${pctDone}%;"></div></div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:.6rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:.3rem;">CA cumulé</div>
+        <div style="font-size:1.1rem;font-weight:800;color:var(--accent2);">${fmt(totCA)} €</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:.6rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:.3rem;">Résultat cumulé</div>
+        <div style="font-size:1.1rem;font-weight:800;color:${totRex>=0?'var(--green)':'var(--red)'};">${fmt(totRex)} €</div>
+      </div>
+      ${S.recruit ? `<div style="text-align:center;">
+        <div style="font-size:.6rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:.3rem;">Recrue</div>
+        <div style="font-size:.85rem;font-weight:700;color:var(--text);">${CANDIDATES.find(c=>c.id===S.recruit).avatar} ${CANDIDATES.find(c=>c.id===S.recruit).name.split(' ')[0]}</div>
+      </div>` : ''}
+    </div>` : '';
+
+  const recruteeBadge = S.recruitDone && S.recruit ? (() => {
+    const rec = CANDIDATES.find(c=>c.id===S.recruit);
+    return `<div style="display:inline-flex;align-items:center;gap:.4rem;background:rgba(56,189,248,.1);border:1px solid var(--accent2);border-radius:6px;padding:.3rem .7rem;font-size:.72rem;font-weight:600;color:var(--accent2);margin-left:.6rem;">${rec.avatar} ${rec.name}</div>`;
+  })() : '';
+
+  const curMission = MONTHLY_MISSIONS[currentPeriod] || MONTHLY_MISSIONS[11];
+  const c = MISSION_COLORS[curMission.type];
+
+  return `
+    <style>
+      @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+    </style>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem;margin-bottom:1.3rem;">
+      <div style="font-family:'Orbitron',sans-serif;font-size:.58rem;letter-spacing:2px;text-transform:uppercase;color:var(--accent2);font-weight:700;">Mission en cours</div>
+      <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;">
+        ${inProgress ? `<button class="btn btn-sec" onclick="restartGame()">🔄 Recommencer</button>` : ''}
+      </div>
+    </div>
+
+    ${progressSection}
+
+    <div style="background:${c.bg};border:2px solid ${c.border};border-radius:14px;padding:1.5rem;position:relative;max-width:600px;margin:0 auto;">
+      <div style="position:absolute;top:.6rem;right:.8rem;font-size:.6rem;font-weight:800;color:var(--accent);letter-spacing:.5px;animation:pulse 1.5s infinite;">▶ EN COURS</div>
+      <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:.8rem;">
+        <div style="width:48px;height:48px;background:${c.dot}22;border:2px solid ${c.dot}55;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;">${curMission.icon}</div>
+        <div>
+          <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:${c.dot};margin-bottom:.2rem;">${MONTHS[curMission.period].name} &nbsp;·&nbsp; Période ${curMission.period + 1}/12</div>
+          <div style="font-size:1.1rem;font-weight:800;color:var(--text);">${curMission.label}</div>
+        </div>
+      </div>
+      <p style="font-size:.9rem;color:var(--text);line-height:1.8;margin-bottom:1rem;">${curMission.desc}</p>
+      <div style="display:inline-block;font-size:.62rem;font-weight:700;padding:.2rem .6rem;border-radius:4px;margin-bottom:1.2rem;" class="tag ${c.tag}">${curMission.tag}</div>
+      <div>
+        <button class="btn btn-primary" style="width:100%;font-size:.95rem;padding:.85rem;" onclick="startSimulation()">
+          ▶ Commencer cette mission
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function goToPeriod(pIdx) {
+  if (S.showHome) return; // handled by startSimulation
+  // Allow jumping to current period only (history review not interactive)
+  if (pIdx === S.period) return;
+}
+
+function startSimulation() {
+  S.showHome = false;
+  render();
+}
+
+// ── RECRUTEMENT (Janvier uniquement) ──
+function renderRecruitment() {
+  const step = S.recruitStep; // 0=CVs, 1=Entretien, 2=Verdict
+
+  const cvCards = CANDIDATES.map(c => `
+    <div class="cv-card ${S.recruit === c.id ? 'sel' : ''}" onclick="selectRecruit('${c.id}')">
+      <div class="cv-avatar">${c.avatar}</div>
+      <div class="cv-name">${c.name}</div>
+      <div class="cv-title">${c.title}</div>
+      <div class="cv-detail">
+        🎓 <strong>Formation :</strong> ${c.education}<br>
+        💼 <strong>Expérience :</strong> ${c.experience}<br>
+        🔧 <strong>Compétences :</strong> ${c.skills}
+      </div>
+      <div class="cv-salary">💶 ${c.salaryLabel} brut</div>
+    </div>`).join('');
+
+  const interviewHTML = INTERVIEW_QUESTIONS.map((q, qi) => `
+    <div style="margin-bottom:1.2rem;">
+      <div class="interview-q">${q.question}</div>
+      <div class="interview-answers">
+        ${CANDIDATES.map(c => `
+          <div class="answer-card">
+            <div class="answer-name">${c.avatar} ${c.name}</div>
+            <div class="answer-text">"${q.answers[c.id]}"</div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+
+  let verdictHTML = '';
+  if (step === 2 && S.recruit) {
+    const chosen = CANDIDATES.find(c => c.id === S.recruit);
+    const correct = S.recruit === CORRECT_RECRUIT;
+    const sofia = CANDIDATES.find(c => c.id === 'sofia');
+    const thomas = CANDIDATES.find(c => c.id === 'thomas');
+    verdictHTML = `
+      <div class="recruit-verdict ${correct ? 'good' : 'bad'}">
+        <div class="recruit-verdict-title">${correct ? '✅ EXCELLENT CHOIX !' : '❌ MAUVAIS CHOIX...'}</div>
+        <p style="font-size:.83rem;line-height:1.8;color:var(--text);margin-bottom:.8rem;">
+          ${correct
+            ? `<strong style="color:var(--green)">Bravo !</strong> Sofia MARTIN est la candidate idéale pour BatiPro SARL.
+               Son expérience en PME BTP, sa maîtrise des coûts d'approvisionnement et sa capacité à négocier avec les fournisseurs sont des atouts majeurs pour notre activité.
+               De plus, son salaire (${sofia.salaryLabel}) est plus adapté à la taille de l'entreprise.`
+            : `Thomas est un excellent ingénieur, mais son profil est taillé pour les grands groupes.
+               Son expérience sur les grands projets et son salaire élevé (+${fmt(thomas.cfMonthly - sofia.cfMonthly)} €/mois vs Sofia) ne sont pas adaptés à une PME de 15 salariés.
+               <strong style="color:var(--red)">Sofia MARTIN</strong> aurait été le meilleur choix.`}
+        </p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:.6rem;">
+          <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:.7rem;">
+            <div style="font-size:.62rem;font-weight:800;color:var(--green);text-transform:uppercase;margin-bottom:.3rem;">✅ Sofia MARTIN — Meilleur choix</div>
+            <div style="font-size:.75rem;color:var(--muted);line-height:1.6;">
+              • Salaire : ${sofia.salaryLabel} → <strong style="color:var(--text)">+${fmt(sofia.cfMonthly)} €/mois de CF</strong><br>
+              • Négociation contrat cadre : prime réduite à +1% (au lieu de +2%)<br>
+              • Spécialiste PME et gestion des coûts matières
+            </div>
+          </div>
+          <div style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:.7rem;">
+            <div style="font-size:.62rem;font-weight:800;color:var(--red);text-transform:uppercase;margin-bottom:.3rem;">⚠️ Thomas DUBOIS — Moins adapté</div>
+            <div style="font-size:.75rem;color:var(--muted);line-height:1.6;">
+              • Salaire : ${thomas.salaryLabel} → <strong style="color:var(--text)">+${fmt(thomas.cfMonthly)} €/mois de CF</strong><br>
+              • Pas d'avantage sur la négociation fournisseurs<br>
+              • Profil grands groupes, peu adapté à la PME
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:.8rem;background:rgba(234,179,8,.06);border:1px solid rgba(234,179,8,.3);border-radius:8px;padding:.7rem;font-size:.75rem;color:var(--text);">
+          <strong style="color:var(--yellow)">💡 Impact sur les charges fixes :</strong>
+          Avec ${chosen.name}, les CF passent de <strong>35 000 €/mois</strong> à <strong>${fmt(BASE.cf + chosen.cfMonthly)} €/mois</strong>
+          (+ ${fmt(chosen.cfMonthly)} € de salaire chargé). Ce montant s'applique à toutes les périodes de l'année.
+        </div>
+      </div>`;
+  }
+
+  return `
+    <div class="card">
+      <div class="recruit-intro">
+        <div style="font-family:'Press Start 2P',monospace;font-size:.55rem;color:var(--accent2);margin-bottom:.5rem;">👥 RECRUTEMENT — JANVIER</div>
+        <div style="font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:.4rem;">BatiPro recrute un(e) responsable chantier !</div>
+        <p style="font-size:.82rem;color:var(--muted);line-height:1.7;">
+          Votre carnet de commandes est plein pour l'année. Pour gérer la croissance et l'approvisionnement en matières premières,
+          vous devez recruter un(e) responsable chantier. Deux candidats ont été présélectionnés.
+          <strong style="color:var(--accent2)">Votre recrutement aura un impact direct sur les charges fixes et les conditions d'achat de l'acier tout au long de l'année.</strong>
+        </p>
+      </div>
+
+      ${step >= 0 ? `
+      <div style="font-size:.8rem;font-weight:700;color:var(--accent2);margin-bottom:.7rem;">📄 Étape 1 — Consultez les CV</div>
+      <div class="recruit-grid">${cvCards}</div>` : ''}
+
+      ${step >= 1 ? `
+      <div class="interview-section">
+        <div style="font-size:.8rem;font-weight:700;color:var(--accent2);margin-bottom:.8rem;">🎤 Étape 2 — Entretien</div>
+        ${interviewHTML}
+      </div>` : ''}
+
+      ${step >= 1 && !S.recruit ? `
+        <div style="background:rgba(239,68,68,.1);border:1px solid var(--red);border-radius:7px;padding:.7rem;font-size:.8rem;color:var(--red);margin-bottom:.8rem;" id="recruit-warn">
+          ⚠️ Sélectionnez un candidat avant de valider.
+        </div>` : ''}
+
+      ${verdictHTML}
+
+      <div class="btn-group" style="margin-top:1rem;">
+        ${step === 0 ? `
+          <button class="btn btn-primary" onclick="recruitNextStep()">Passer à l'entretien →</button>
+        ` : step === 1 ? `
+          <button class="btn btn-primary" onclick="recruitValidate()">Valider mon recrutement →</button>
+        ` : `
+          <button class="btn btn-green" onclick="finishRecruit()">Commencer la simulation →</button>
+        `}
+      </div>
+    </div>`;
+}
+
+function selectRecruit(id) {
+  S.recruit = id;
+  renderMainContent();
+}
+
+function recruitNextStep() {
+  S.recruitStep = 1;
+  renderMainContent();
+  renderSubstepBar();
+}
+
+function recruitValidate() {
+  if (!S.recruit) {
+    const w = document.getElementById('recruit-warn');
+    if (w) w.style.display = 'block';
+    return;
+  }
+  S.recruitStep = 2;
+  renderMainContent();
+  renderSubstepBar();
+}
+
+function finishRecruit() {
+  S.recruitDone = true;
+  S.subStep = 0;
+  render();
+}
+
+// ── PGI SELECTION (Février) ──
+function renderPGI() {
+  const step = S.pgiStep; // 0=QCM, 1=Entretien, 2=Verdict
+  const qcmDone = Object.keys(S.pgiQcm).length === PGI_QCM.length;
+  const score = PGI_QCM.filter((q,i) => S.pgiQcm[i] === q.ok).length;
+
+  // ── QCM ──
+  const qcmHTML = PGI_QCM.map((q, qi) => {
+    const answered = S.pgiQcm[qi] !== undefined;
+    const chosenIdx = S.pgiQcm[qi];
+    return `
+      <div style="margin-bottom:.9rem;background:var(--panel2);border:1px solid ${answered?(chosenIdx===q.ok?'var(--green)':'var(--red)'):'var(--border)'};border-radius:10px;padding:.85rem;">
+        <div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:.5rem;">${qi+1}. ${q.q}</div>
+        <div style="display:flex;flex-direction:column;gap:.3rem;">
+          ${q.opts.map((opt, oi) => {
+            let style = answered ? 'pointer-events:none;' : '';
+            if (answered) {
+              if (oi === q.ok) style += 'background:rgba(34,197,94,.12);border-color:var(--green);color:var(--green);';
+              else if (oi === chosenIdx) style += 'background:rgba(239,68,68,.12);border-color:var(--red);color:var(--red);';
+            }
+            return `<div class="qcm-opt" style="${style}" onclick="pgiQcmAnswer(${qi},${oi})">${String.fromCharCode(65+oi)}. ${opt}</div>`;
+          }).join('')}
+        </div>
+        ${answered ? `<div style="font-size:.73rem;font-style:italic;color:var(--muted);margin-top:.4rem;padding:.3rem .5rem;border-left:2px solid ${chosenIdx===q.ok?'var(--green)':'var(--red)'};">💡 ${q.expl}</div>` : ''}
+      </div>`;
+  }).join('');
+
+  const scoreBox = qcmDone ? `
+    <div style="background:var(--panel2);border-radius:10px;padding:.8rem;text-align:center;margin-bottom:1rem;">
+      <div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:.3rem;">Score QCM</div>
+      <div style="font-family:'Press Start 2P',monospace;font-size:1.2rem;color:${score>=5?'var(--green)':score>=3?'var(--yellow)':'var(--red)'};">${score} / 6</div>
+      <div style="font-size:.75rem;color:var(--muted);margin-top:.3rem;">${score===6?'Parfait !':score>=4?'Bonne maîtrise des bases':'Revoyez le cours sur les PGI'}</div>
+    </div>` : '';
+
+  // ── ENTRETIEN ──
+  const entretienHTML = PGI_OPTIONS.map(p => `
+    <div class="cv-card ${S.pgi===p.id?'sel':''}" onclick="selectPgi('${p.id}')">
+      <div class="cv-avatar">${p.emoji}</div>
+      <div class="cv-name">${p.name}</div>
+      <div class="cv-title">${p.editor}</div>
+      <div style="display:inline-block;background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.3);border-radius:4px;font-size:.65rem;font-weight:700;color:var(--accent2);padding:.15rem .5rem;margin-bottom:.5rem;">${p.type}</div>
+      <div class="cv-detail">
+        💶 <strong>Coût :</strong> ${p.priceLine}<br>
+        📅 <strong>Impact mensuel CF :</strong> ${p.cfLabel}<br>
+        📋 <strong>Détails :</strong> ${p.details}
+      </div>
+      <div style="margin:.6rem 0 .3rem;font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--green);">✅ Avantages</div>
+      <div style="font-size:.73rem;color:var(--muted);line-height:1.7;">${p.pros.map(x=>'• '+x).join('<br>')}</div>
+      <div style="margin:.5rem 0 .3rem;font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--red);">⚠️ Inconvénients</div>
+      <div style="font-size:.73rem;color:var(--muted);line-height:1.7;">${p.cons.map(x=>'• '+x).join('<br>')}</div>
+    </div>`).join('');
+
+  // ── VERDICT ──
+  let verdictHTML = '';
+  if (step === 2 && S.pgi) {
+    const chosen = PGI_OPTIONS.find(p=>p.id===S.pgi);
+    const other  = PGI_OPTIONS.find(p=>p.id!==S.pgi);
+    const correct = S.pgi === CORRECT_PGI;
+    const diffMonthly = Math.abs(chosen.cfMonthly - other.cfMonthly);
+    verdictHTML = `
+      <div class="recruit-verdict ${correct?'good':'bad'}">
+        <div class="recruit-verdict-title">${correct?'✅ BON CHOIX STRATÉGIQUE !':'⚠️ CHOIX DISCUTABLE...'}</div>
+        <p style="font-size:.83rem;line-height:1.8;color:var(--text);margin-bottom:.8rem;">
+          ${correct
+            ? `<strong style="color:var(--green)">Excellent !</strong> CloudERP BTP (abonnement SaaS) est la solution idéale pour BatiPro.
+               Pas d'investissement initial, mises à jour et support inclus, accessible sur chantier depuis tablette.
+               Pour une PME en croissance, la flexibilité du SaaS prend le dessus sur l'économie à long terme de la licence.`
+            : `ProGest PME est un choix honorable, mais moins adapté à une PME BTP en croissance.
+               La licence fixe coûte moins cher sur 5 ans (48 000 € vs 90 000 €), mais l'investissement initial pèse sur la trésorerie
+               et la maintenance interne est une charge supplémentaire. <strong style="color:var(--red)">CloudERP BTP</strong> aurait été préférable.`}
+        </p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:.6rem;">
+          <div style="background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.3);border-radius:8px;padding:.7rem;">
+            <div style="font-size:.62rem;font-weight:800;color:var(--accent2);text-transform:uppercase;margin-bottom:.3rem;">☁️ CloudERP BTP — Recommandé</div>
+            <div style="font-size:.75rem;color:var(--muted);line-height:1.7;">
+              • +1 500 €/mois de CF<br>• Zéro capital initial<br>• Support & MAJ inclus<br>• Accès mobile chantier
+            </div>
+          </div>
+          <div style="background:rgba(100,116,139,.06);border:1px solid rgba(100,116,139,.2);border-radius:8px;padding:.7rem;">
+            <div style="font-size:.62rem;font-weight:800;color:var(--muted);text-transform:uppercase;margin-bottom:.3rem;">🖥️ ProGest PME — Alternative</div>
+            <div style="font-size:.75rem;color:var(--muted);line-height:1.7;">
+              • +800 €/mois de CF<br>• 48 000 € à débourser<br>• MAJ majeures payantes<br>• Infra serveur nécessaire
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:.8rem;background:rgba(234,179,8,.06);border:1px solid rgba(234,179,8,.3);border-radius:8px;padding:.7rem;font-size:.75rem;color:var(--text);">
+          <strong style="color:var(--yellow)">💡 Impact sur les charges fixes :</strong>
+          Avec <strong>${chosen.name}</strong>, les CF passent de <strong>${fmt(BASE.cf)} €/mois</strong>
+          à <strong>${fmt(BASE.cf + getRecruitCF() + chosen.cfMonthly)} €/mois</strong>
+          (+ ${fmt(chosen.cfMonthly)} € ${chosen.type.includes('Licence')?'amortissement':'abonnement'}).
+          Ce coût s'applique de février à décembre.
+        </div>
+      </div>`;
+  }
+
+  return `
+    <div class="card">
+      <div class="recruit-intro">
+        <div style="font-family:'Press Start 2P',monospace;font-size:.55rem;color:var(--accent2);margin-bottom:.5rem;">💻 CHOIX DU PGI — FÉVRIER</div>
+        <div style="font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:.4rem;">BatiPro SARL doit s'équiper d'un Progiciel de Gestion Intégré !</div>
+        <p style="font-size:.82rem;color:var(--muted);line-height:1.7;">
+          La direction a décidé d'informatiser la gestion de l'entreprise. Deux éditeurs ont été présélectionnés.
+          <strong style="color:var(--accent2)">Commencez par le QCM pour vérifier vos connaissances sur les PGI, puis comparez les deux solutions avant de décider.</strong>
+        </p>
+      </div>
+
+      ${step === 0 ? `
+        <div style="font-size:.8rem;font-weight:700;color:var(--accent2);margin-bottom:.8rem;">📝 Étape 1 — QCM : qu'est-ce qu'un PGI ?</div>
+        ${qcmHTML}
+        ${scoreBox}
+        ${!qcmDone ? `<div style="background:rgba(239,68,68,.08);border:1px solid var(--red);border-radius:7px;padding:.6rem;font-size:.78rem;color:var(--red);margin-bottom:.8rem;" id="pgi-qcm-warn" style="display:none;">⚠️ Répondez à toutes les questions avant de continuer.</div>` : ''}
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="pgiNextStep()">Passer à l'entretien →</button>
+        </div>` : ''}
+
+      ${step === 1 ? `
+        <div style="font-size:.8rem;font-weight:700;color:var(--accent2);margin-bottom:.8rem;">🤝 Étape 2 — Entretien avec les 2 éditeurs</div>
+        <div class="recruit-grid">${entretienHTML}</div>
+        ${!S.pgi ? `<div style="background:rgba(239,68,68,.08);border:1px solid var(--red);border-radius:7px;padding:.6rem;font-size:.78rem;color:var(--red);margin-bottom:.8rem;" id="pgi-sel-warn">⚠️ Sélectionnez un PGI avant de valider.</div>` : ''}
+        <div class="btn-group">
+          <button class="btn btn-sec" onclick="S.pgiStep=0;renderMainContent();renderSubstepBar();">← QCM</button>
+          <button class="btn btn-primary" onclick="pgiValidate()">Valider mon choix →</button>
+        </div>` : ''}
+
+      ${step === 2 ? `
+        <div style="font-size:.8rem;font-weight:700;color:var(--accent2);margin-bottom:.8rem;">✅ Étape 3 — Verdict</div>
+        ${verdictHTML}
+        <div class="btn-group" style="margin-top:1rem;">
+          <button class="btn btn-green" onclick="finishPgi()">Commencer le mois de Février →</button>
+        </div>` : ''}
+    </div>`;
+}
+
+function pgiQcmAnswer(qIdx, optIdx) {
+  if (S.pgiQcm[qIdx] !== undefined) return; // already answered
+  S.pgiQcm[qIdx] = optIdx;
+  renderMainContent();
+  renderSubstepBar();
+}
+function pgiNextStep() {
+  if (Object.keys(S.pgiQcm).length < PGI_QCM.length) {
+    const w = document.getElementById('pgi-qcm-warn');
+    if (w) w.style.display = 'block';
+    return;
+  }
+  S.pgiStep = 1;
+  renderMainContent(); renderSubstepBar();
+}
+function selectPgi(id) { S.pgi = id; renderMainContent(); }
+function pgiValidate() {
+  if (!S.pgi) { const w = document.getElementById('pgi-sel-warn'); if(w) w.style.display='block'; return; }
+  S.pgiStep = 2;
+  renderMainContent(); renderSubstepBar();
+}
+function finishPgi() {
+  S.pgiDone = true;
+  S.subStep = 0;
+  render();
+}
+
+// ── SUBSTEP 0: MARKET ──
+function renderMarket() {
+  const m = MONTHS[S.period];
+  const ep = getEffectivePrices(S.period);
+  const prev = S.period > 0 ? getEffectivePrices(S.period - 1) : null;
+  const evt = S.assignedEvents[S.period];
+
+  const formatMat = (key, label, unit) => {
+    const curr = ep[key];
+    const base = MONTHS[0].prices[key];
+    const p = prev ? prev[key] : null;
+    const basePct = ((curr - base) / base * 100).toFixed(1);
+    const baseChg = basePct > 0.5 ? `<span style="color:var(--red)">+${basePct}% vs jan.</span>` :
+                    basePct < -0.5 ? `<span style="color:var(--green)">${basePct}% vs jan.</span>` :
+                    `<span style="color:var(--muted)">≈ jan.</span>`;
+    return `
+      <div class="price-card" data-mat="${label[0]}">
+        <div class="price-mat">${label}</div>
+        <div class="price-val">${fmt(curr)} €</div>
+        <div class="price-unit">${unit}</div>
+        ${priceChange(curr, p)}
+        <div class="price-base">Base jan.: ${fmt(base)} €/t &nbsp;|&nbsp; ${baseChg}</div>
+        ${evt && evt.mods[key] !== 1.0 ? `<div style="font-size:.65rem;margin-top:.3rem;color:${evt.mods[key]>1?'var(--red)':'var(--green)'}">⚡ Événement : ×${evt.mods[key]}</div>` : ''}
+      </div>`;
+  };
+
+  const eventCard = evt ? `
+    <div class="event-flash ${evt.type}" data-emoji="${evt.emoji}">
+      <div class="evbadge">${evt.badge}</div>
+      <div class="evtitle">${evt.title}</div>
+      <p class="evbody">${evt.desc}</p>
+      <p class="evdetail">📎 ${evt.detail}</p>
+      <div class="evimpact">
+        ${evt.mods.acier !== 1.0 ? `<span class="${evt.mods.acier>1?'up':'down'}">⚙️ Acier ×${evt.mods.acier} (${evt.mods.acier>1?'+':''}${Math.round((evt.mods.acier-1)*100)}%)</span>` : '<span class="flat">⚙️ Acier: stable</span>'}
+        ${evt.mods.bois  !== 1.0 ? `<span class="${evt.mods.bois>1?'up':'down'}">🪵 Bois ×${evt.mods.bois} (${evt.mods.bois>1?'+':''}${Math.round((evt.mods.bois-1)*100)}%)</span>`   : '<span class="flat">🪵 Bois: stable</span>'}
+        ${evt.mods.beton !== 1.0 ? `<span class="${evt.mods.beton>1?'up':'down'}">🏗️ Béton ×${evt.mods.beton} (${evt.mods.beton>1?'+':''}${Math.round((evt.mods.beton-1)*100)}%)</span>` : '<span class="flat">🏗️ Béton: stable</span>'}
+      </div>
+    </div>` : '';
+
+  return `
+    <div class="card">
+      <div class="card-title">📰 ${m.name} – Tableau de bord des matières premières</div>
+      ${eventCard}
+      <div class="news-box">${m.news}</div>
+      ${m.alert ? `<div class="alert-box">${m.alert}</div>` : ''}
+      <div class="price-board">
+        ${formatMat('acier','⚙️ Acier','€/tonne')}
+        ${formatMat('bois', '🪵 Bois',  '€/m³')}
+        ${formatMat('beton','🏗️ Béton', '€/m³')}
+      </div>
+      <div class="hint">
+        <strong>Rappel des quantités consommées par mois :</strong>
+        Acier = 30 t | Bois = 50 m³ | Béton = 250 m³ | Main d'œuvre variable = 25 000 € | Charges fixes = 35 000 €
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="nextSub()">Remplir le budget prévisionnel →</button>
+      </div>
+    </div>
+  `;
+}
+
+// ── SUBSTEP 1: BUDGET ──
+function renderBudget() {
+  const m = MONTHS[S.period];
+  const ep = getEffectivePrices(S.period);
+  const b = computeBudget(S.period);
+  const prev = S.period > 0 ? getEffectivePrices(S.period-1) : null;
+  const diff = diffLevel(S.period);
+  const I = (id) => `<input class="budget-input" type="number" id="${id}" placeholder="?">`;
+  const G = (val) => `<span class="given-val">${fmt(val)}</span>`;
+
+  const diffInfo = {
+    full:   { cls:'diff-full',   label:'🟢 Niveau 1 — Calculez toutes les cases (périodes 1–4)' },
+    totals: { cls:'diff-totals', label:'🟡 Niveau 2 — Calculez les totaux uniquement (périodes 5–8)' },
+    result: { cls:'diff-result', label:'🔴 Niveau 3 — Calculez uniquement le résultat (périodes 9–12)' },
+  }[diff];
+
+  function chgClass(curr, p) {
+    if (!p) return 'flat';
+    const d = (curr - p) / p * 100;
+    return d > 0.5 ? 'up' : d < -0.5 ? 'down' : 'flat';
+  }
+  function chgTxt(curr, p) {
+    if (!p) return '—';
+    const d = ((curr - p) / p * 100).toFixed(1);
+    return d > 0 ? `▲ +${d}%` : d < 0 ? `▼ ${d}%` : '≈ stable';
+  }
+
+  return `
+    <div class="card">
+      <div class="card-title">📋 Budget prévisionnel – ${m.name}</div>
+      <div class="diff-badge ${diffInfo.cls}">${diffInfo.label}</div>
+
+      <div style="background:var(--panel2);border:2px solid var(--accent2);border-radius:10px;padding:.9rem;margin-bottom:1rem;">
+        <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent2);margin-bottom:.7rem;">📊 Prix du marché ce mois — à utiliser pour votre budget</div>
+        <div class="price-ref">
+          <div class="price-ref-item">
+            <div class="price-ref-label">⚙️ Acier</div>
+            <div class="price-ref-val">${fmt(ep.acier)} €</div>
+            <div class="price-ref-unit">par tonne</div>
+            <div class="price-ref-chg ${chgClass(ep.acier, prev?.acier)}">${chgTxt(ep.acier, prev?.acier)}</div>
+          </div>
+          <div class="price-ref-item">
+            <div class="price-ref-label">🪵 Bois</div>
+            <div class="price-ref-val">${fmt(ep.bois)} €</div>
+            <div class="price-ref-unit">par m³</div>
+            <div class="price-ref-chg ${chgClass(ep.bois, prev?.bois)}">${chgTxt(ep.bois, prev?.bois)}</div>
+          </div>
+          <div class="price-ref-item">
+            <div class="price-ref-label">🏗️ Béton</div>
+            <div class="price-ref-val">${fmt(ep.beton)} €</div>
+            <div class="price-ref-unit">par m³</div>
+            <div class="price-ref-chg ${chgClass(ep.beton, prev?.beton)}">${chgTxt(ep.beton, prev?.beton)}</div>
+          </div>
+        </div>
+        <div style="font-size:.7rem;color:var(--muted);text-align:center;margin-top:.3rem;">
+          Quantités standard : Acier = <strong>30 t</strong> | Bois = <strong>50 m³</strong> | Béton = <strong>250 m³</strong>
+        </div>
+      </div>
+
+      <div class="hint">
+        Utilisez les prix affichés ci-dessus. Le budget est établi <em>avant</em> vos décisions d'approvisionnement.
+      </div>
+
+      <div id="indices-bgt" style="display:none;background:rgba(234,179,8,.06);border:1px solid rgba(234,179,8,.35);border-radius:9px;padding:.8rem 1rem;margin-bottom:.8rem;font-size:.8rem;line-height:2;">
+        <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--yellow);margin-bottom:.3rem;">💡 Indices — formules de calcul</div>
+        <div style="font-size:.7rem;color:var(--red);font-weight:700;margin-bottom:.5rem;">⚠️ Malus de ${INDICES_MALUS.toLocaleString('fr')} € (licenciement abusif) appliqué à votre résultat.</div>
+        <div>📌 <strong>CA prévisionnel</strong> = valeur contractuelle fixe = <strong>150 000 €</strong></div>
+        <div>⚙️ <strong>Acier</strong> = 30 t × ${fmt(ep.acier)} €/t = <em>?</em></div>
+        <div>🪵 <strong>Bois</strong> = 50 m³ × ${fmt(ep.bois)} €/m³ = <em>?</em></div>
+        <div>🏗️ <strong>Béton</strong> = 250 m³ × ${fmt(ep.beton)} €/m³ = <em>?</em></div>
+        <div>👷 <strong>Main d'œuvre variable</strong> = donnée = <strong>25 000 €</strong></div>
+        <div>📊 <strong>Total CV</strong> = Acier + Bois + Béton + MO variable</div>
+        <div>🏢 <strong>Charges fixes</strong> = donnée = <strong>${fmt(b.cf)} €</strong>${b.recruitCF > 0 ? ` (35 000 + ${fmt(b.recruitCF)} salaire)` : ''}</div>
+        <div>💰 <strong>Résultat prévisionnel</strong> = CA − Total CV − Charges fixes</div>
+      </div>
+
+      <table class="budget-table">
+        <thead>
+          <tr><th>Poste</th><th>Montant (€)</th></tr>
+        </thead>
+        <tbody>
+          <tr ${diff==='result'?'class="given"':''}>
+            <td>
+              <strong>Chiffre d'affaires prévisionnel</strong>
+              <div style="margin-top:.3rem;background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.3);border-radius:5px;padding:.25rem .5rem;display:inline-block;">
+                <span style="font-size:.65rem;color:var(--accent2);font-weight:700;">💼 Marchés signés = <strong style="font-size:.8rem;">150 000 €</strong></span>
+              </div>
+            </td>
+            <td style="text-align:right">${diff==='result' ? G(b.ca) : I('b-ca')}</td>
+          </tr>
+          <tr style="border-top:2px solid var(--border);">
+            <td colspan="2" style="color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;padding:.5rem .8rem;">Charges variables</td>
+          </tr>
+          <tr ${diff!=='full'?'class="given"':''}>
+            <td>⚙️ Acier</td>
+            <td style="text-align:right">${diff==='full' ? I('b-acier') : G(b.acier)}</td>
+          </tr>
+          <tr ${diff!=='full'?'class="given"':''}>
+            <td>🪵 Bois</td>
+            <td style="text-align:right">${diff==='full' ? I('b-bois') : G(b.bois)}</td>
+          </tr>
+          <tr ${diff!=='full'?'class="given"':''}>
+            <td>🏗️ Béton</td>
+            <td style="text-align:right">${diff==='full' ? I('b-beton') : G(b.beton)}</td>
+          </tr>
+          <tr class="given">
+            <td>Main d'œuvre variable</td>
+            <td style="text-align:right"><span class="given-val">25 000</span></td>
+          </tr>
+          <tr class="${diff==='result'?'given':'subtotal'}">
+            <td><strong>Total charges variables</strong></td>
+            <td style="text-align:right">${diff==='result' ? G(b.cv) : I('b-cv')}</td>
+          </tr>
+          <tr class="given">
+            <td>Charges fixes${b.recruitCF > 0 ? ` <span style="font-size:.65rem;color:var(--yellow)">(dont salaire recrue: +${fmt(b.recruitCF)} €)</span>` : ''}</td>
+            <td style="text-align:right"><span class="given-val">${fmt(b.cf)}</span></td>
+          </tr>
+          <tr class="total">
+            <td><strong>RÉSULTAT PRÉVISIONNEL</strong></td>
+            <td style="text-align:right">${I('b-rex')}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="checkBudget()">✅ Vérifier</button>
+        <button class="btn btn-sec" onclick="toggleIndices('bgt')">💡 Indices</button>
+        ${S.period === 11 ? `<button class="btn btn-sec" onclick="revealBudget()">🔑 Correction</button>` : ''}
+        <button class="btn btn-sec" onclick="resetBudget()">🔄 Réinitialiser</button>
+      </div>
+      <div class="score-box" id="bgt-score"></div>
+      <div id="bgt-next" style="display:none;margin-top:.8rem;">
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="nextSub()">Prendre mes décisions →</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── SUBSTEP 2: DECISIONS ──
+function renderDecisions() {
+  const m = MONTHS[S.period];
+  const ep = getEffectivePrices(S.period);
+  const prev = getPrevPrices(S.period);
+  const pIA0 = S.period === 0;
+
+  const renderOpt = (opts, key, groupIdx) => opts.map((o, i) => {
+    const unavail = (key === 'A' && i === 1 && pIA0) ? 'unavail' : '';
+    const sel = (key === 'A' && S.decA === i) || (key === 'B' && S.decB === i) ? 'sel' : '';
+    const onclick = key === 'A' ? `pickDecA(${i})` : `pickDecB(${i})`;
+    let extraNote = '';
+    if (key === 'A' && i === 1 && !pIA0) {
+      const price = (prev.acier * 1.02).toFixed(0);
+      extraNote = `<div style="font-size:.7rem;color:var(--yellow);margin-top:.4rem;">→ Prix appliqué : ${fmt(price)} €/t</div>`;
+    }
+    if (key === 'A' && i === 1 && pIA0) {
+      extraNote = `<div style="font-size:.7rem;color:var(--red);margin-top:.4rem;">Non disponible en janvier (pas de mois précédent)</div>`;
+    }
+    return `
+      <div class="dec-opt ${sel} ${unavail}" onclick="${onclick}" id="dopt-${key}-${i}">
+        <div class="dec-opt-emoji">${o.emoji}</div>
+        <div class="dec-opt-label">${o.label}</div>
+        <div class="dec-opt-desc">${o.desc}</div>
+        ${extraNote}
+        <div class="dec-tags">${o.tags.map(t=>`<span class="tag ${t.c}">${t.t}</span>`).join('')}</div>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="card">
+      <div class="card-title">⚡ Vos décisions – ${m.name}</div>
+      <div class="hint">
+        <strong>Acier ce mois :</strong> ${fmt(ep.acier)} €/t
+        ${S.period > 0 ? ` | Mois précédent : ${fmt(prev.acier)} €/t → Contrat cadre = ${fmt(Math.round(prev.acier*1.02))} €/t` : ' (1er mois — contrat cadre indisponible)'}
+      </div>
+      <div class="dec-group">
+        <div class="dec-group-title">⚙️ Décision A – Approvisionnement en acier</div>
+        <div class="dec-options">${renderOpt(DEC_A, 'A', 0)}</div>
+      </div>
+      <div class="dec-group">
+        <div class="dec-group-title">💰 Décision B – Prix de vente facturé aux clients</div>
+        <div class="dec-options">${renderOpt(DEC_B, 'B', 1)}</div>
+      </div>
+      <div id="dec-warn" style="display:none;background:rgba(239,68,68,.1);border:1px solid var(--red);border-radius:7px;padding:.7rem;font-size:.8rem;color:var(--red);margin-bottom:.8rem;">
+        ⚠️ Choisissez une option pour chaque décision.
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-sec" onclick="prevSub()">← Budget</button>
+        <button class="btn btn-primary" onclick="validateDec()">Calculer les résultats réels →</button>
+      </div>
+    </div>`;
+}
+
+// ── SUBSTEP 3: CALCULS RÉELS ──
+function renderCalculs() {
+  const m = MONTHS[S.period];
+  const ep = getEffectivePrices(S.period);
+  const act = computeActual(S.period, S.decA, S.decB);
+  const optA = DEC_A[S.decA], optB = DEC_B[S.decB];
+
+  const betonNote = optA.betonExtra > 0 ?
+    `(${act.betonQty} m³ × ${fmt(ep.beton)} €) [dont +${optA.betonExtra} m³ substitution]` :
+    `(250 m³ × ${fmt(ep.beton)} €)`;
+
+  const acierNote = S.decA === 1 ?
+    `(${act.acierQty} t × ${fmtPrice(act.acierPrice)} € — contrat cadre)` :
+    S.decA === 2 ?
+    `(${act.acierQty} t × ${fmt(ep.acier)} € — substitution −30%)` :
+    `(${act.acierQty} t × ${fmt(ep.acier)} € — prix marché)`;
+
+  const diff = diffLevel(S.period);
+  const I = (id) => `<input class="budget-input" type="number" id="${id}" placeholder="?">`;
+  const G = (val) => `<span class="given-val">${fmt(val)}</span>`;
+  const diffInfo = {
+    full:   { cls:'diff-full',   label:'🟢 Niveau 1 — Calculez toutes les cases (périodes 1–4)' },
+    totals: { cls:'diff-totals', label:'🟡 Niveau 2 — Calculez les totaux uniquement (périodes 5–8)' },
+    result: { cls:'diff-result', label:'🔴 Niveau 3 — Calculez uniquement le résultat (périodes 9–12)' },
+  }[diff];
+
+  return `
+    <div class="card">
+      <div class="card-title">🧮 Calculs réels – ${m.name}</div>
+      <div class="diff-badge ${diffInfo.cls}">${diffInfo.label}</div>
+      <div class="hint">
+        Décision A : <strong>${optA.label}</strong> | Décision B : <strong>${optB.label}</strong>
+      </div>
+
+      <div id="indices-act" style="display:none;background:rgba(234,179,8,.06);border:1px solid rgba(234,179,8,.35);border-radius:9px;padding:.8rem 1rem;margin-bottom:.8rem;font-size:.8rem;line-height:2;">
+        <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--yellow);margin-bottom:.3rem;">💡 Indices — formules de calcul</div>
+        <div style="font-size:.7rem;color:var(--red);font-weight:700;margin-bottom:.5rem;">⚠️ Malus de ${INDICES_MALUS.toLocaleString('fr')} € (licenciement abusif) appliqué à votre résultat.</div>
+        <div>📌 <strong>CA réel</strong> = décision B → <strong>${fmt(act.ca)} €</strong></div>
+        <div>⚙️ <strong>Acier réel</strong> = ${acierNote}</div>
+        <div>🪵 <strong>Bois réel</strong> = 50 m³ × ${fmt(ep.bois)} €/m³ = <em>?</em></div>
+        <div>🏗️ <strong>Béton réel</strong> = ${betonNote}</div>
+        <div>👷 <strong>Main d'œuvre variable</strong> = inchangée = <strong>25 000 €</strong></div>
+        <div>📊 <strong>Total CV réel</strong> = Acier + Bois + Béton + MO variable</div>
+        <div>🏢 <strong>Charges fixes</strong> = <strong>${fmt(act.cf)} €</strong>${act.recruitCF > 0 ? ` (35 000 + ${fmt(act.recruitCF)} salaire)` : ''}</div>
+        <div>💰 <strong>Résultat réel</strong> = CA − Total CV − Charges fixes</div>
+      </div>
+
+      <table class="budget-table">
+        <thead>
+          <tr><th>Poste</th><th>Montant réel (€)</th></tr>
+        </thead>
+        <tbody>
+          <tr ${diff==='result'?'class="given"':''}>
+            <td><strong>CA réel</strong> <span style="font-size:.72rem;color:var(--muted)">(décision B)</span></td>
+            <td style="text-align:right">${diff==='result' ? G(act.ca) : I('a-ca')}</td>
+          </tr>
+          <tr style="border-top:2px solid var(--border);">
+            <td colspan="2" style="color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;padding:.5rem .8rem;">Charges variables réelles</td>
+          </tr>
+          <tr ${diff!=='full'?'class="given"':''}>
+            <td>⚙️ Acier réel</td>
+            <td style="text-align:right">${diff==='full' ? I('a-acier') : G(act.acier)}</td>
+          </tr>
+          <tr ${diff!=='full'?'class="given"':''}>
+            <td>🪵 Bois réel</td>
+            <td style="text-align:right">${diff==='full' ? I('a-bois') : G(act.bois)}</td>
+          </tr>
+          <tr ${diff!=='full'?'class="given"':''}>
+            <td>🏗️ Béton réel</td>
+            <td style="text-align:right">${diff==='full' ? I('a-beton') : G(act.beton)}</td>
+          </tr>
+          <tr class="given">
+            <td>Main d'œuvre variable</td>
+            <td style="text-align:right"><span class="given-val">25 000</span></td>
+          </tr>
+          <tr class="${diff==='result'?'given':'subtotal'}">
+            <td><strong>Total CV réel</strong></td>
+            <td style="text-align:right">${diff==='result' ? G(act.cv) : I('a-cv')}</td>
+          </tr>
+          <tr class="given">
+            <td>Charges fixes${act.recruitCF > 0 ? ` <span style="font-size:.65rem;color:var(--yellow)">(+${fmt(act.recruitCF)} € recrue)</span>` : ''}</td>
+            <td style="text-align:right"><span class="given-val">${fmt(act.cf)}</span></td>
+          </tr>
+          <tr class="total">
+            <td><strong>RÉSULTAT RÉEL</strong></td>
+            <td style="text-align:right">${I('a-rex')}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="checkActual()">✅ Vérifier</button>
+        <button class="btn btn-sec" onclick="toggleIndices('act')">💡 Indices</button>
+        ${S.period === 11 ? `<button class="btn btn-sec" onclick="revealActual()">🔑 Correction</button>` : ''}
+        <button class="btn btn-sec" onclick="resetActual()">🔄 Réinitialiser</button>
+      </div>
+      <div class="score-box" id="act-score"></div>
+      <div id="act-next" style="display:none;margin-top:.8rem;">
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="nextSub()">Analyser les écarts →</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── SUBSTEP 4: COMPARAISON ──
+function renderComparaison() {
+  const m = MONTHS[S.period];
+  const bgt = computeBudget(S.period);
+  const act = computeActual(S.period, S.decA, S.decB);
+  const ec  = computeEcarts(bgt, act);
+
+  function ecRow(label, bv, av, ecv, isCharge=false) {
+    // isCharge: favorable = actual < budget (saved money)
+    const val = isCharge ? bv - av : av - bv;
+    let cls = '', sym = '';
+    if (Math.abs(val) > 50) {
+      cls = val > 0 ? 'fav' : 'def';
+      sym = val > 0 ? `▲ ${fmt(Math.abs(val))} € <span style="font-size:.7rem">(F)</span>` : `▼ ${fmt(Math.abs(val))} € <span style="font-size:.7rem">(D)</span>`;
+    } else { cls = 'neutral'; sym = '≈ 0 €'; }
+    return `<tr>
+      <td>${label}</td>
+      <td>${fmt(bv)} €</td>
+      <td>${fmt(av)} €</td>
+      <td class="${cls}">${sym}</td>
+    </tr>`;
+  }
+
+  const malus = S.indicesMalus[S.period] ? INDICES_MALUS : 0;
+  const actRexNet = act.rex - malus;
+  const totalRex = S.running.rex + actRexNet;
+  const totalCA  = S.running.ca  + act.ca;
+  const allHist  = [...S.history.map(h=>h.actual), act];
+  const rexValues = allHist.map(h=>h.rex);
+  const maxBar = Math.max(...rexValues.map(Math.abs), 1);
+
+  const sparkHTML = rexValues.map((r,i) => {
+    const h = Math.max(4, Math.round(Math.abs(r)/maxBar * 44));
+    return `<div class="spark-bar ${r>=0?'pos':'neg'}" style="height:${h}px;" title="${MONTHS[i].short}: ${fmt(r)}€"></div>`;
+  }).join('');
+
+  let nextBtn = '';
+  if (S.period < 11) {
+    nextBtn = `<button class="btn btn-sec" onclick="S.showHome=true;render();">🗓️ Retour agenda</button>
+               <button class="btn btn-primary" onclick="nextPeriod()">Période suivante : ${MONTHS[S.period+1].name} →</button>`;
+  } else {
+    nextBtn = `<button class="btn btn-green" onclick="showFinalBilan()">🏆 Bilan annuel final →</button>`;
+  }
+
+  return `
+    <div class="card">
+      <div class="card-title">📊 Analyse des écarts – ${m.name}</div>
+      <div class="hint">
+        <strong>Rappel :</strong> Écart <span class="fav">Favorable (F)</span> = réel meilleur que prévu.
+        Écart <span class="def">Défavorable (D)</span> = réel moins bon que prévu.<br>
+        Pour les charges : favorable = dépense réelle &lt; dépense prévue. Pour le CA et le résultat : favorable = réel &gt; prévu.
+      </div>
+      <table class="ecart-table">
+        <thead>
+          <tr><th>Poste</th><th>Budget prévu</th><th>Réel</th><th>Écart</th></tr>
+        </thead>
+        <tbody>
+          ${ecRow('CA', bgt.ca, act.ca, ec.ca, false)}
+          ${ecRow('Coût acier', bgt.acier, act.acier, ec.acier, true)}
+          ${ecRow('Coût bois', bgt.bois, act.bois, ec.bois, true)}
+          ${ecRow('Coût béton', bgt.beton, act.beton, ec.beton, true)}
+          ${ecRow('Total charges variables', bgt.cv, act.cv, ec.cv, true)}
+          ${malus > 0 ? `<tr><td style="color:var(--red);font-weight:700;">⚠️ Malus indices (licenciement abusif)</td><td colspan="2" style="text-align:right;color:var(--red);font-weight:700;">−${fmt(malus)} €</td><td class="def">▼ ${fmt(malus)} € (D)</td></tr>` : ''}
+          <tr class="total-row">
+            ${ecRow('RÉSULTAT NET', bgt.rex, actRexNet, actRexNet - bgt.rex, false)}
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="background:var(--panel2);border-radius:10px;padding:1rem;margin-bottom:1rem;">
+        <div style="font-size:.75rem;font-weight:700;color:var(--accent2);margin-bottom:.6rem;">📈 Évolution des résultats (périodes jouées)</div>
+        <div class="sparkline">${sparkHTML}</div>
+        <div style="display:flex;gap:1rem;font-size:.68rem;color:var(--muted);margin-top:.4rem;flex-wrap:wrap;">
+          ${allHist.map((h,i)=>`<span>${MONTHS[i].short}: <strong style="color:${h.rex>=0?'var(--green)':'var(--red)'}">${fmt(h.rex)}€</strong></span>`).join('')}
+        </div>
+      </div>
+
+      <div style="background:var(--panel2);border-radius:10px;padding:1rem;margin-bottom:1.2rem;">
+        <div style="font-size:.75rem;font-weight:700;color:var(--muted);margin-bottom:.6rem;">📊 Cumul depuis janvier</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.7rem;text-align:center;">
+          <div><div class="sum-label">CA cumulé</div><div class="sum-val" style="color:var(--accent2)">${fmt(totalCA)} €</div></div>
+          <div><div class="sum-label">Résultat cumulé</div><div class="sum-val ${totalRex>=0?'pos':'neg'}">${fmt(totalRex)} €</div></div>
+          <div><div class="sum-label">Résultat ${m.name}${malus>0?' (après malus)':''}</div><div class="sum-val ${actRexNet>=0?'pos':'neg'}">${fmt(actRexNet)} €</div></div>
+          <div><div class="sum-label">Décision acier</div><div class="sum-val" style="font-size:.85rem;color:var(--text)">${DEC_A[S.decA].emoji} ${DEC_A[S.decA].label.split(' – ')[0]}</div></div>
+        </div>
+      </div>
+
+      ${buildAnalysisQCM(S.period, bgt, act, ec)}
+
+      <div class="btn-group">
+        <button class="btn btn-sec" onclick="S.subStep=0;render()">← Revoir le marché</button>
+        ${nextBtn}
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════
+// FINAL BILAN
+// ══════════════════════════════════════════
+function showFinalBilan() {
+  const el = document.getElementById('main-content');
+  const allPeriods = S.history;
+  const totCA = allPeriods.reduce((s,h)=>s+h.actual.ca, 0);
+  const totRex = allPeriods.reduce((s,h)=>s+h.actual.rex, 0);
+  const totBgtRex = allPeriods.reduce((s,h)=>s+h.budget.rex, 0);
+  const best = allPeriods.reduce((a,b)=>a.actual.rex>b.actual.rex?a:b);
+  const worst = allPeriods.reduce((a,b)=>a.actual.rex<b.actual.rex?a:b);
+
+  const rowsPeriod = allPeriods.map(h => `
+    <tr>
+      <td>${MONTHS[h.period].name}</td>
+      <td>${DEC_A[h.decA].emoji} ${DEC_A[h.decA].label.split(' ')[0]+' '+DEC_A[h.decA].label.split(' ')[1]}</td>
+      <td>${DEC_B[h.decB].emoji}</td>
+      <td>${fmt(h.budget.rex)} €</td>
+      <td class="${h.actual.rex>=0?'fav':'def'}">${fmt(h.actual.rex)} €</td>
+      <td class="${h.actual.rex-h.budget.rex>=0?'fav':'def'}">${h.actual.rex-h.budget.rex>=0?'+':''}${fmt(h.actual.rex-h.budget.rex)} €</td>
+    </tr>`).join('');
+
+  el.innerHTML = `
+    <div class="card">
+      <div style="font-family:'Press Start 2P',monospace;font-size:.7rem;color:var(--accent);margin-bottom:1rem;">🏆 BILAN ANNUEL – BATIPRO SARL</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.8rem;margin-bottom:1.5rem;">
+        <div class="period-summary" style="text-align:center">
+          <div class="sum-label">Périodes jouées</div><div class="sum-val neu">${allPeriods.length} / 12</div>
+        </div>
+        <div class="period-summary" style="text-align:center">
+          <div class="sum-label">CA total</div><div class="sum-val neu">${fmt(totCA)} €</div>
+        </div>
+        <div class="period-summary" style="text-align:center">
+          <div class="sum-label">Résultat total</div><div class="sum-val ${totRex>=0?'pos':'neg'}">${fmt(totRex)} €</div>
+        </div>
+        <div class="period-summary" style="text-align:center">
+          <div class="sum-label">Écart total Budget/Réel</div><div class="sum-val ${totRex-totBgtRex>=0?'pos':'neg'}">${totRex-totBgtRex>=0?'+':''}${fmt(totRex-totBgtRex)} €</div>
+        </div>
+        <div class="period-summary" style="text-align:center">
+          <div class="sum-label">Meilleur mois</div><div class="sum-val pos">${MONTHS[best.period].short}: +${fmt(best.actual.rex)} €</div>
+        </div>
+        <div class="period-summary" style="text-align:center">
+          <div class="sum-label">Mois le plus difficile</div><div class="sum-val ${worst.actual.rex<0?'neg':'neu'}">${MONTHS[worst.period].short}: ${fmt(worst.actual.rex)} €</div>
+        </div>
+      </div>
+
+      <div style="overflow-x:auto;margin-bottom:1.2rem;">
+        <table class="ecart-table">
+          <thead>
+            <tr><th>Mois</th><th>Décision acier</th><th>CA</th><th>Budget prévu</th><th>Résultat réel</th><th>Écart</th></tr>
+          </thead>
+          <tbody>${rowsPeriod}</tbody>
+        </table>
+      </div>
+
+      <div style="background:rgba(56,189,248,.05);border:1px solid var(--accent2);border-radius:10px;padding:1.2rem;margin-bottom:1.2rem;">
+        <div style="font-size:.8rem;font-weight:700;color:var(--accent2);margin-bottom:.8rem;">❓ Questions d'analyse finale</div>
+        <div style="margin-bottom:.9rem;">
+          <p style="font-size:.85rem;font-weight:600;margin-bottom:.4rem;">1. Quelle décision sur l'acier a généré le plus d'économies ? Justifiez avec les chiffres.</p>
+          <textarea style="width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:7px;color:var(--text);padding:.6rem;font-family:Inter,sans-serif;font-size:.8rem;resize:vertical;min-height:60px;" placeholder="Votre réponse..."></textarea>
+        </div>
+        <div style="margin-bottom:.9rem;">
+          <p style="font-size:.85rem;font-weight:600;margin-bottom:.4rem;">2. Le budget prévisionnel était-il un outil utile ? Quels écarts ont été les plus significatifs ?</p>
+          <textarea style="width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:7px;color:var(--text);padding:.6rem;font-family:Inter,sans-serif;font-size:.8rem;resize:vertical;min-height:60px;" placeholder="Votre réponse..."></textarea>
+        </div>
+        <div style="margin-bottom:.9rem;">
+          <p style="font-size:.85rem;font-weight:600;margin-bottom:.4rem;">3. Comment BatiPro peut-elle se protéger contre les fluctuations de cours à l'avenir ?</p>
+          <textarea style="width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:7px;color:var(--text);padding:.6rem;font-family:Inter,sans-serif;font-size:.8rem;resize:vertical;min-height:60px;" placeholder="Votre réponse..."></textarea>
+        </div>
+        <button class="btn btn-sec" onclick="document.getElementById('final-correction').style.display=document.getElementById('final-correction').style.display==='none'?'block':'none'">🔑 Éléments de correction</button>
+        <div id="final-correction" style="display:none;margin-top:.8rem;background:rgba(34,197,94,.06);border:1px solid var(--green);border-radius:8px;padding:1rem;font-size:.82rem;line-height:1.8;color:var(--text);">
+          <strong style="color:var(--green)">Q1 – Décision acier optimale :</strong>
+          En période de hausse (mars, octobre, novembre), le contrat cadre au prix du mois précédent limite les coûts (économie = (prix_marché − prix_contrat) × 30 t).
+          En période de baisse ou de stabilité, l'achat au marché est préférable (pas de prime payée).
+          La substitution béton armé est rentable quand le différentiel acier/béton est favorable.<br><br>
+          <strong style="color:var(--green)">Q2 – Utilité du budget prévisionnel :</strong>
+          Le budget permet de mesurer l'impact des décisions. Les écarts les plus importants surviennent sur l'acier (volatilité forte : 800 → 1 100 €/t en octobre, soit +18 000 € d'écart sur une seule période).
+          Le bois et le béton génèrent aussi des écarts mais moins contrôlables par les décisions disponibles.<br><br>
+          <strong style="color:var(--green)">Q3 – Se protéger :</strong>
+          Outils de couverture : contrats à terme sur les matières premières, clauses d'indexation systématiques avec les clients, diversification des fournisseurs, constitution de stocks en période de prix bas.
+          La clause de révision des prix (+4%) sur les contrats clients est aussi un outil clé.
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="restartGame()">🔄 Rejouer l'année</button>
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════
+// BUDGET CHECK / REVEAL
+// ══════════════════════════════════════════
+function ck(id, expected, tol=50) {
+  const el = document.getElementById(id);
+  if (!el) return false;
+  const v = parseFloat(el.value);
+  if (isNaN(v)) { el.classList.remove('ok','ko','rev'); return false; }
+  const ok = Math.abs(v - expected) <= tol;
+  el.classList.remove('ok','ko','rev');
+  el.classList.add(ok ? 'ok' : 'ko');
+  return ok;
+}
+function rv(id, val) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.value = val;
+  el.classList.remove('ok','ko');
+  el.classList.add('rev');
+}
+function rs(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.value = '';
+  el.classList.remove('ok','ko','rev');
+}
+
+const INDICES_MALUS = 20000;
+function toggleIndices(key) {
+  const el = document.getElementById(`indices-${key}`);
+  if (!el) return;
+  const visible = el.style.display !== 'none';
+  if (visible) {
+    // Simply hide
+    el.style.display = 'none';
+    document.querySelectorAll(`[onclick="toggleIndices('${key}')"]`).forEach(b => { b.textContent = '💡 Indices'; b.style.borderColor=''; b.style.color=''; });
+    return;
+  }
+  // First time this period: show warning + confirm
+  const alreadyUsed = S.indicesMalus[S.period];
+  if (!alreadyUsed) {
+    const ok = confirm(`⚠️ MALUS LICENCIEMENT ABUSIF\n\nConsulter les indices vous coûte ${INDICES_MALUS.toLocaleString('fr')} € de pénalité (licenciement abusif) déduits de votre résultat.\n\nConfirmer la consultation ?`);
+    if (!ok) return;
+    S.indicesMalus[S.period] = true;
+    // Show malus notification
+    const n = document.getElementById('notif');
+    if (n) { n.textContent = `⚠️ Malus −${INDICES_MALUS.toLocaleString('fr')} € appliqué !`; n.style.borderColor='var(--red)'; n.style.color='var(--red)'; n.classList.add('show'); setTimeout(()=>{ n.classList.remove('show'); n.style.borderColor=''; n.style.color=''; n.textContent='✓ Réponses vérifiées'; }, 3000); }
+  }
+  el.style.display = 'block';
+  document.querySelectorAll(`[onclick="toggleIndices('${key}')"]`).forEach(b => { b.textContent = '🔼 Masquer indices'; b.style.borderColor='var(--yellow)'; b.style.color='var(--yellow)'; });
+}
+
+// ── DIFFICULTY LEVEL ──
+function diffLevel(pIdx) {
+  if (pIdx <= 3) return 'full';
+  if (pIdx <= 7) return 'totals';
+  return 'result';
+}
+
+// ── QCM ANALYSE ──
+function buildAnalysisQCM(pIdx, bgt, act, ec) {
+  const curr = getEffectivePrices(pIdx);
+  const prev = getPrevPrices(pIdx);
+
+  // Compute cost of each steel option
+  const costs = [
+    Math.round(BASE.acier_qty * curr.acier),
+    pIdx > 0 ? Math.round(BASE.acier_qty * prev.acier * 1.02) : null,
+    Math.round(Math.round(BASE.acier_qty * 0.7) * curr.acier),
+  ];
+  const validCosts = costs.map((c,i) => c !== null ? c : Infinity);
+  const minCost = Math.min(...validCosts);
+  const chosenCost = costs[S.decA] !== null ? costs[S.decA] : costs[0];
+  const wasOptimal = chosenCost <= minCost + 100;
+  const bestName = ['Acheter au marché','Contrat cadre fournisseur','Substitution béton armé'][validCosts.indexOf(minCost)];
+
+  const q1Correct = wasOptimal ? 0 : 1;
+  const q1Feedback = wasOptimal
+    ? `✅ Correct ! "${DEC_A[S.decA].label}" était bien la moins coûteuse (${fmt(chosenCost)} €).`
+    : `❌ Non : "${bestName}" aurait coûté ${fmt(minCost)} €, soit ${fmt(chosenCost - minCost)} € de moins.`;
+
+  const q2Correct = ec.rex > 500 ? 0 : ec.rex < -500 ? 1 : 2;
+  const q2Feedbacks = [
+    `✅ Favorable : résultat réel (${fmt(act.rex)} €) &gt; budget (${fmt(bgt.rex)} €). Écart : +${fmt(ec.rex)} €.`,
+    `✅ Défavorable : résultat réel (${fmt(act.rex)} €) &lt; budget (${fmt(bgt.rex)} €). Écart : ${fmt(ec.rex)} €.`,
+    `✅ Neutre : l'écart (${fmt(Math.abs(ec.rex))} €) est inférieur à 500 €.`,
+  ];
+
+  const mkOpts = (q, opts, correct) => opts.map((o, i) =>
+    `<div class="qcm-opt" id="qcm${q}-${i}" onclick="qcmPick(${q},${i},${correct})">${o}</div>`
+  ).join('');
+
+  return `
+    <div style="background:rgba(56,189,248,.05);border:1px solid var(--accent2);border-radius:10px;padding:1rem;margin-bottom:1.2rem;">
+      <div style="font-size:.75rem;font-weight:700;color:var(--accent2);margin-bottom:.8rem;">💭 Questions d'analyse — répondez avant de continuer</div>
+
+      <div id="qcm-q1" data-correct="${q1Correct}" style="margin-bottom:1rem;">
+        <div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:.5rem;">Q1 — Votre décision acier était-elle la moins coûteuse ce mois-ci ?</div>
+        <div style="display:flex;flex-direction:column;gap:.35rem;">
+          ${mkOpts(1, ['Oui — c\'était l\'option la moins chère', 'Non — une autre option était plus avantageuse'], q1Correct)}
+        </div>
+        <div id="qcm1-fb" style="display:none;margin-top:.5rem;font-size:.78rem;line-height:1.7;padding:.5rem .7rem;border-radius:6px;">${q1Feedback}</div>
+      </div>
+
+      <div id="qcm-q2" data-correct="${q2Correct}" style="margin-bottom:.8rem;">
+        <div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:.5rem;">Q2 — L'écart sur le résultat de ce mois est :</div>
+        <div style="display:flex;flex-direction:column;gap:.35rem;">
+          ${mkOpts(2, ['📈 Favorable (F) — résultat réel &gt; budget prévu', '📉 Défavorable (D) — résultat réel &lt; budget prévu', '≈ Neutre — écart inférieur à 500 €'], q2Correct)}
+        </div>
+        <div id="qcm2-fb" style="display:none;margin-top:.5rem;font-size:.78rem;line-height:1.7;padding:.5rem .7rem;border-radius:6px;">${q2Feedbacks[q2Correct]}</div>
+      </div>
+
+      <div id="qcm-done" style="display:none;font-size:.72rem;color:var(--green);font-weight:600;margin-top:.4rem;">✅ Analyse complète — vous pouvez passer à la suite.</div>
+    </div>`;
+}
+
+function qcmPick(q, optIdx, isCorrect) {
+  const qBlock = document.getElementById(`qcm-q${q}`);
+  if (!qBlock) return;
+  const correctIdx = parseInt(qBlock.dataset.correct);
+  const opts = qBlock.querySelectorAll('.qcm-opt');
+  opts.forEach((el, i) => {
+    el.style.pointerEvents = 'none';
+    if (i === correctIdx) {
+      el.style.background = 'rgba(34,197,94,.12)'; el.style.borderColor = 'var(--green)'; el.style.color = 'var(--green)';
+    } else if (i === optIdx && i !== correctIdx) {
+      el.style.background = 'rgba(239,68,68,.12)'; el.style.borderColor = 'var(--red)'; el.style.color = 'var(--red)';
+    }
+  });
+  const fb = document.getElementById(`qcm${q}-fb`);
+  if (fb) {
+    fb.style.display = 'block';
+    fb.style.background = isCorrect ? 'rgba(34,197,94,.08)' : 'rgba(239,68,68,.08)';
+    fb.style.border = `1px solid ${isCorrect ? 'var(--green)' : 'var(--red)'}`;
+  }
+  if (!window._qcm) window._qcm = {};
+  window._qcm[q] = true;
+  if (window._qcm[1] && window._qcm[2]) {
+    const done = document.getElementById('qcm-done');
+    if (done) done.style.display = 'block';
+  }
+}
+
+function checkBudget() {
+  const b = computeBudget(S.period);
+  const diff = diffLevel(S.period);
+  let s = 0, total = 0;
+  if (diff !== 'result') { if (ck('b-ca', b.ca, 0)) s++; total++; }
+  if (diff === 'full') { if (ck('b-acier', b.acier, 100)) s++; total++; }
+  if (diff === 'full') { if (ck('b-bois', b.bois, 50)) s++; total++; }
+  if (diff === 'full') { if (ck('b-beton', b.beton, 100)) s++; total++; }
+  if (diff !== 'result') { if (ck('b-cv', b.cv, 150)) s++; total++; }
+  if (ck('b-rex', b.rex, 150)) s++; total++;
+  showScoreEl('bgt-score', s, total);
+  notify();
+  if (s >= Math.max(1, total - 1)) document.getElementById('bgt-next').style.display = 'block';
+}
+function revealBudget() {
+  const b = computeBudget(S.period);
+  const diff = diffLevel(S.period);
+  if (diff !== 'result') { rv('b-ca', b.ca); }
+  if (diff === 'full') { rv('b-acier', b.acier); rv('b-bois', b.bois); rv('b-beton', b.beton); }
+  if (diff !== 'result') { rv('b-cv', b.cv); }
+  rv('b-rex', b.rex);
+  const total = diff === 'full' ? 6 : diff === 'totals' ? 3 : 1;
+  showScoreEl('bgt-score', '?', total);
+  document.getElementById('bgt-next').style.display = 'block';
+}
+function resetBudget() {
+  const diff = diffLevel(S.period);
+  const fields = ['b-rex'];
+  if (diff !== 'result') fields.push('b-ca', 'b-cv');
+  if (diff === 'full') fields.push('b-acier', 'b-bois', 'b-beton');
+  fields.forEach(rs);
+  const el = document.getElementById('bgt-score');
+  if(el) el.classList.remove('show');
+  const nx = document.getElementById('bgt-next');
+  if(nx) nx.style.display = 'none';
+}
+
+function checkActual() {
+  const a = computeActual(S.period, S.decA, S.decB);
+  const diff = diffLevel(S.period);
+  let s = 0, total = 0;
+  if (diff !== 'result') { if (ck('a-ca', a.ca, 0)) s++; total++; }
+  if (diff === 'full') { if (ck('a-acier', a.acier, 100)) s++; total++; }
+  if (diff === 'full') { if (ck('a-bois', a.bois, 50)) s++; total++; }
+  if (diff === 'full') { if (ck('a-beton', a.beton, 100)) s++; total++; }
+  if (diff !== 'result') { if (ck('a-cv', a.cv, 150)) s++; total++; }
+  if (ck('a-rex', a.rex, 150)) s++; total++;
+  showScoreEl('act-score', s, total);
+  notify();
+  if (s >= Math.max(1, total - 1)) document.getElementById('act-next').style.display = 'block';
+}
+function revealActual() {
+  const a = computeActual(S.period, S.decA, S.decB);
+  const diff = diffLevel(S.period);
+  if (diff !== 'result') { rv('a-ca', a.ca); }
+  if (diff === 'full') { rv('a-acier', a.acier); rv('a-bois', a.bois); rv('a-beton', a.beton); }
+  if (diff !== 'result') { rv('a-cv', a.cv); }
+  rv('a-rex', a.rex);
+  const total = diff === 'full' ? 6 : diff === 'totals' ? 3 : 1;
+  showScoreEl('act-score', '?', total);
+  document.getElementById('act-next').style.display = 'block';
+}
+function resetActual() {
+  const diff = diffLevel(S.period);
+  const fields = ['a-rex'];
+  if (diff !== 'result') fields.push('a-ca', 'a-cv');
+  if (diff === 'full') fields.push('a-acier', 'a-bois', 'a-beton');
+  fields.forEach(rs);
+  const el = document.getElementById('act-score');
+  if(el) el.classList.remove('show');
+  const nx = document.getElementById('act-next');
+  if(nx) nx.style.display = 'none';
+}
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function nextSub() {
+  S.subStep++;
+  if (S.subStep > 4) S.subStep = 4;
+  render();
+}
+function prevSub() {
+  S.subStep--;
+  if (S.subStep < 0) S.subStep = 0;
+  render();
+}
+
+function pickDecA(i) {
+  S.decA = i;
+  document.querySelectorAll('[id^="dopt-A-"]').forEach((el,j)=>el.classList.toggle('sel',j===i));
+}
+function pickDecB(i) {
+  S.decB = i;
+  document.querySelectorAll('[id^="dopt-B-"]').forEach((el,j)=>el.classList.toggle('sel',j===i));
+}
+
+function validateDec() {
+  if (S.decA === null || S.decB === null) {
+    document.getElementById('dec-warn').style.display = 'block';
+    return;
+  }
+  document.getElementById('dec-warn').style.display = 'none';
+  nextSub();
+}
+
+function nextPeriod() {
+  // Save current period data
+  const bgt = computeBudget(S.period);
+  const act = computeActual(S.period, S.decA, S.decB);
+  const ecarts = computeEcarts(bgt, act);
+  const periodMalus = S.indicesMalus[S.period] ? INDICES_MALUS : 0;
+  const actNet = { ...act, rex: act.rex - periodMalus };
+  S.history.push({ period: S.period, decA: S.decA, decB: S.decB, budget: bgt, actual: actNet, ecarts });
+  S.running.ca  += act.ca;
+  S.running.rex += actNet.rex;
+
+  // ── Concurrents IA ──
+  const expDec = pickExpertDecision(S.period);
+  const avgDec = pickAverageDecision(S.period);
+  const expAct = computeCompActual(S.period, expDec.dA, expDec.dB);
+  const avgAct = computeCompActual(S.period, avgDec.dA, avgDec.dB);
+  S.compA.runningRex += expAct.rex;
+  S.compA.history.push({ period: S.period, dA: expDec.dA, dB: expDec.dB, rex: expAct.rex });
+  S.compA.lastDec = getLastDecLabel({ decA: expDec.dA, decB: expDec.dB });
+  S.compB.runningRex += avgAct.rex;
+  S.compB.history.push({ period: S.period, dA: avgDec.dA, dB: avgDec.dB, rex: avgAct.rex });
+  S.compB.lastDec = getLastDecLabel({ decA: avgDec.dA, decB: avgDec.dB });
+
+  S.period++;
+  S.subStep = 0;
+  S.decA = null;
+  S.decB = null;
+  window._qcm = {};
+  render();
+}
+
+function jumpTo(pIdx) {
+  if (!S.history.find(h=>h.period===pIdx) && pIdx !== S.period) return;
+  if (pIdx === S.period) return;
+  // Only allow jumping to completed periods for review
+  const saved = S.history.find(h=>h.period===pIdx);
+  if (!saved) return;
+  alert('Navigation vers les périodes passées — mode lecture uniquement via le corrigé enseignant.');
+}
+
+// ══════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════
+function updateDashboard() {
+  const all = S.history;
+  const totCA = all.reduce((s,h)=>s+h.actual.ca, 0);
+  const totRex = all.reduce((s,h)=>s+h.actual.rex, 0);
+  document.getElementById('d-ca').textContent = all.length ? fmt(totCA) + ' €' : '—';
+  const rexEl = document.getElementById('d-rex');
+  rexEl.textContent = all.length ? fmt(totRex) + ' €' : '—';
+  rexEl.className = 'dash-val ' + (all.length ? (totRex >= 0 ? 'pos' : 'neg') : '');
+  if (all.length) {
+    const best = all.reduce((a,b)=>a.actual.rex>b.actual.rex?a:b);
+    const worst = all.reduce((a,b)=>a.actual.rex<b.actual.rex?a:b);
+    document.getElementById('d-best').textContent = MONTHS[best.period].short + ': ' + fmt(best.actual.rex) + ' €';
+    document.getElementById('d-worst').textContent = MONTHS[worst.period].short + ': ' + fmt(worst.actual.rex) + ' €';
+  }
+  const currP = getEffectivePrices(S.period).acier;
+  const baseP = MONTHS[0].prices.acier;
+  const pct = ((currP - baseP) / baseP * 100).toFixed(1);
+  document.getElementById('d-acier').textContent = fmt(currP) + ' €/t (' + (pct > 0 ? '+' : '') + pct + '%)';
+  document.getElementById('d-acier').className = 'dash-val ' + (pct > 2 ? 'neg' : pct < -2 ? 'pos' : 'neu');
+}
+
+// ══════════════════════════════════════════
+// TEACHER MODAL
+// ══════════════════════════════════════════
+function openTeacher() {
+  let html = '';
+  for (let i = 0; i <= S.period; i++) {
+    const m = MONTHS[i];
+    const ep = getEffectivePrices(i);
+    const b = computeBudget(i);
+    const prev = getPrevPrices(i);
+    const evt = S.assignedEvents[i];
+    // Show answers for all 3 decision A options
+    html += `
+      <div style="margin-bottom:1.2rem;padding-bottom:1rem;border-bottom:1px solid var(--border);">
+        <div style="color:var(--accent);font-weight:700;font-size:.8rem;margin-bottom:.4rem;">${m.name}${evt ? ` <span style="color:var(--red);font-size:.65rem;margin-left:.5rem;">⚡ ${evt.title.split(' ').slice(0,4).join(' ')}…</span>` : ''}</div>
+        <div style="font-size:.7rem;color:var(--muted);margin-bottom:.4rem;">Prix effectifs : Acier ${fmt(ep.acier)}€ | Bois ${fmt(ep.bois)}€ | Béton ${fmt(ep.beton)}€</div>
+        <div style="font-size:.72rem;color:var(--muted);margin-bottom:.4rem;">Budget prévisionnel :</div>
+        <div class="t-row"><span>CA prévisionnel</span><span class="t-val">${fmt(b.ca)} €</span></div>
+        <div class="t-row"><span>Acier (30t × ${fmt(ep.acier)}€)</span><span class="t-val">${fmt(b.acier)} €</span></div>
+        <div class="t-row"><span>Bois (50m³ × ${fmt(ep.bois)}€)</span><span class="t-val">${fmt(b.bois)} €</span></div>
+        <div class="t-row"><span>Béton (250m³ × ${fmt(ep.beton)}€)</span><span class="t-val">${fmt(b.beton)} €</span></div>
+        <div class="t-row"><span>Total CV</span><span class="t-val">${fmt(b.cv)} €</span></div>
+        <div class="t-row"><span>Résultat prévisionnel</span><span class="t-val ${b.rex>=0?'t-fav':'t-def'}">${fmt(b.rex)} €</span></div>
+        <div style="font-size:.72rem;color:var(--muted);margin:.6rem 0 .3rem;">Résultats selon décision acier :</div>
+        ${[0,1,2].map(dA => {
+          if (dA === 1 && i === 0) return '';
+          const act = computeActual(i, dA, 0); // avec CA fixe
+          const actR = computeActual(i, dA, 1); // avec révision
+          return `<div class="t-row"><span>${DEC_A[dA].emoji} ${DEC_A[dA].label.split(' – ')[0]}</span><span class="t-val ${act.rex>=0?'t-fav':'t-def'}">${fmt(act.rex)} € (CA fixe) / ${fmt(actR.rex)} € (rév.)</span></div>`;
+        }).join('')}
+      </div>`;
+  }
+  if (!html) html = '<p style="color:var(--muted);font-size:.8rem;">Aucune période jouée.</p>';
+  document.getElementById('teacher-content').innerHTML = html;
+  document.getElementById('teacher-modal').classList.add('show');
+}
+
+// ══════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════
+function showScoreEl(id, score, max) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.add('show');
+  if (score === '?') { el.innerHTML='<div class="score-big y">Correction affichée 💡</div>'; return; }
+  const p = score / max;
+  const cls = p >= .85 ? 'g' : p >= .6 ? 'y' : 'r';
+  const msg = p >= .85 ? 'Excellent !' : p >= .6 ? 'Bien — revérifiez les cases rouges.' : 'À retravailler.';
+  el.innerHTML = `<div class="score-big ${cls}">${score}/${max}</div><p style="color:var(--muted);font-size:.8rem">${msg}</p>`;
+}
+
+function notify() {
+  const n = document.getElementById('notif');
+  n.classList.add('show');
+  setTimeout(()=>n.classList.remove('show'), 2200);
+}
+
+function restartGame() {
+  S = { period:0, subStep:0, showHome:true, decA:null, decB:null,
+        playerName:'', playerClass:'',
+        recruit:null, recruitDone:false, recruitStep:0,
+        pgi:null, pgiDone:false, pgiStep:0, pgiQcm:{},
+        history:[], running:{ca:0,rex:0}, assignedEvents:{}, indicesMalus:{},
+        compA:{ runningRex:0, history:[], lastDec:null },
+        compB:{ runningRex:0, history:[], lastDec:null }
+  };
+  randomizeGame();
+  assignEvents();
+  // Remettre l'écran d'accueil et vider les champs
+  const ws = document.getElementById('welcome-screen');
+  if (ws) {
+    ws.classList.remove('hidden');
+    document.getElementById('w-name').value = '';
+    document.getElementById('w-class').value = '';
+    document.getElementById('w-error').classList.remove('show');
+  }
+  render();
+}
+
+// ══════════════════════════════════════════
+// MODE PROJECTION
+// ══════════════════════════════════════════
+let projMode = false;
+function toggleProj() {
+  projMode = !projMode;
+  document.body.classList.toggle('proj', projMode);
+  const btn = document.getElementById('proj-btn');
+  btn.textContent = projMode ? '🔍 Normal' : '🔍 Projection';
+  btn.style.borderColor = projMode ? 'var(--accent)' : '';
+  btn.style.color = projMode ? 'var(--accent)' : '';
+}
+
+// ══════════════════════════════════════════
+// MINUTEUR
+// ══════════════════════════════════════════
+let timerSecs = 300;
+let timerRemain = 300;
+let timerRunning = false;
+let timerInterval = null;
+
+function toggleTimer() {
+  const w = document.getElementById('timer-widget');
+  w.classList.toggle('show');
+  const btn = document.getElementById('timer-toggle-btn');
+  btn.style.borderColor = w.classList.contains('show') ? 'var(--accent2)' : '';
+  btn.style.color = w.classList.contains('show') ? 'var(--accent2)' : '';
+}
+// ── CALCULATRICE ──
+let calcVal = '0', calcPrev = null, calcOper = null, calcReset = false;
+function calcScreen(v) { document.getElementById('calc-screen').textContent = parseFloat(v).toLocaleString('fr',{maximumFractionDigits:10}); }
+function calcNum(d) {
+  if (calcReset) { calcVal = d; calcReset = false; }
+  else calcVal = calcVal === '0' ? d : calcVal + d;
+  calcScreen(calcVal);
+}
+function calcDot() {
+  if (calcReset) { calcVal = '0'; calcReset = false; }
+  if (!calcVal.includes('.')) calcVal += '.';
+  document.getElementById('calc-screen').textContent = calcVal;
+}
+function calcOp(op) {
+  if (calcOper && !calcReset) calcEquals();
+  calcPrev = parseFloat(calcVal);
+  calcOper = op;
+  calcReset = true;
+}
+function calcEquals() {
+  if (calcOper === null || calcReset) return;
+  const a = calcPrev, b = parseFloat(calcVal);
+  let r;
+  if (calcOper === '+') r = a + b;
+  else if (calcOper === '-') r = a - b;
+  else if (calcOper === '*') r = a * b;
+  else if (calcOper === '/') r = b !== 0 ? a / b : 'Erreur';
+  calcVal = String(r);
+  calcOper = null; calcPrev = null; calcReset = true;
+  calcScreen(calcVal);
+}
+function calcClear() { calcVal = '0'; calcPrev = null; calcOper = null; calcReset = false; calcScreen('0'); }
+function calcSign() { calcVal = String(-parseFloat(calcVal)); calcScreen(calcVal); }
+function calcPct() { calcVal = String(parseFloat(calcVal) / 100); calcScreen(calcVal); }
+function toggleCalc() {
+  const w = document.getElementById('calc-widget');
+  w.classList.toggle('show');
+  const btn = document.getElementById('calc-toggle-btn');
+  btn.style.borderColor = w.classList.contains('show') ? 'var(--accent2)' : '';
+  btn.style.color = w.classList.contains('show') ? 'var(--accent2)' : '';
+}
+function setTimer(mins) {
+  pauseTimer();
+  timerSecs = mins * 60;
+  timerRemain = timerSecs;
+  updateTimerDisplay();
+}
+function startTimer() {
+  if (timerRunning) return;
+  timerRunning = true;
+  timerInterval = setInterval(() => {
+    if (timerRemain <= 0) {
+      pauseTimer();
+      document.getElementById('timer-display').textContent = '⏰ 00:00';
+      return;
+    }
+    timerRemain--;
+    updateTimerDisplay();
+  }, 1000);
+}
+function pauseTimer() {
+  timerRunning = false;
+  clearInterval(timerInterval);
+}
+function resetTimer() {
+  pauseTimer();
+  timerRemain = timerSecs;
+  updateTimerDisplay();
+}
+function updateTimerDisplay() {
+  const m = Math.floor(timerRemain / 60).toString().padStart(2, '0');
+  const s = (timerRemain % 60).toString().padStart(2, '0');
+  const el = document.getElementById('timer-display');
+  el.textContent = `${m}:${s}`;
+  el.className = timerRemain <= 30 ? 'warn' : timerRemain <= 60 ? '' : 'ok';
+  // Pulse the border when warning
+  document.getElementById('timer-widget').style.borderColor =
+    timerRemain <= 30 ? 'var(--red)' : timerRemain <= 60 ? 'var(--yellow)' : 'var(--border)';
+}
+
+// ══════════════════════════════════════════
+// MOT DE PASSE CORRIGÉ ENSEIGNANT
+// ══════════════════════════════════════════
+const TEACHER_CODE = 'STMG';
+function askTeacherPwd() {
+  const modal = document.getElementById('pwd-modal');
+  document.getElementById('pwd-input').value = '';
+  document.getElementById('pwd-error').textContent = '';
+  modal.classList.add('show');
+  setTimeout(() => document.getElementById('pwd-input').focus(), 100);
+}
+function checkPwd() {
+  const val = document.getElementById('pwd-input').value.trim().toUpperCase();
+  if (val === TEACHER_CODE) {
+    document.getElementById('pwd-modal').classList.remove('show');
+    openTeacher();
+  } else {
+    document.getElementById('pwd-error').textContent = '❌ Code incorrect. Réessayez.';
+    document.getElementById('pwd-input').value = '';
+    document.getElementById('pwd-input').focus();
+  }
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+randomizeGame();
+assignEvents();
+render();
+</script>
+</div><!-- /content-wrap -->
+</div><!-- /body-layout -->
+</body>
+</html>
